@@ -1,0 +1,9 @@
+{
+  "receipt_id": "LIL-RECEIPT-VALID-001",
+  "intent_id": "LIL-INTENT-001",
+  "intent_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "asset_id": "LIL-ASSET-GPK-001",
+  "state": "PROPOSED",
+  "human_approved": false,
+  "authority": false
+}

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jsonwisdom/GPKMONSTER/schemas/operation_intent.schema.json",
+  "title": "Living Image Ledger Operation Intent",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["intent_id", "asset_id", "purpose_id", "policy_id", "requested_operation", "authority"],
+  "properties": {
+    "intent_id": {"type": "string", "minLength": 1},
+    "asset_id": {"type": "string", "minLength": 1},
+    "purpose_id": {"type": "string", "minLength": 1},
+    "policy_id": {"type": "string", "minLength": 1},
+    "requested_operation": {"type": "string", "minLength": 1},
+    "authority": {"const": false}
+  }
+}
