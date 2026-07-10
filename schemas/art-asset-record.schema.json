@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jsonwisdom/GPKMONSTER/schemas/art-asset-record.schema.json",
+  "title": "Creative Art Asset Record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "asset_id",
+    "title",
+    "asset_type",
+    "state",
+    "creator",
+    "rights_holder",
+    "original_work",
+    "official_affiliation",
+    "human_approved",
+    "authority",
+    "links",
+    "commercial"
+  ],
+  "properties": {
+    "asset_id": {"type": "string", "pattern": "^[A-Z0-9]+(?:-[A-Z0-9]+)*$"},
+    "title": {"type": "string", "minLength": 1},
+    "asset_type": {"enum": ["CONCEPT", "PROMPT", "IMAGE", "CHARACTER", "LESSON", "COACHING_PACK", "PRODUCT_PACKAGE", "LICENSE", "PUBLICATION"]},
+    "state": {"enum": ["IDEA", "DRAFT", "RENDERED", "REVIEWED", "APPROVED", "PACKAGED", "PUBLISHED", "LICENSED", "SOLD", "ARCHIVED", "REJECTED"]},
+    "creator": {"type": "string", "minLength": 1},
+    "rights_holder": {"type": "string", "minLength": 1},
+    "original_work": {"type": "boolean"},
+    "third_party_reference": {"type": ["string", "null"]},
+    "official_affiliation": {"const": false},
+    "human_approved": {"type": "boolean"},
+    "authority": {"const": false},
+    "links": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "image": {"type": ["string", "null"]},
+        "metadata": {"type": ["string", "null"]},
+        "lesson": {"type": ["string", "null"]},
+        "package": {"type": ["string", "null"]},
+        "provenance": {"type": ["string", "null"]},
+        "storefront": {"type": ["string", "null"]}
+      }
+    },
+    "commercial": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "currency"],
+      "properties": {
+        "status": {"enum": ["NOT_FOR_SALE", "DRAFT", "LISTED", "LICENSED", "SOLD"]},
+        "currency": {"type": "string", "minLength": 3, "maxLength": 3},
+        "asking_price": {"type": ["number", "null"], "minimum": 0},
+        "sale_price": {"type": ["number", "null"], "minimum": 0},
+        "license_fee": {"type": ["number", "null"], "minimum": 0},
+        "internal_estimate": {"type": ["number", "null"], "minimum": 0},
+        "valuation_basis": {"type": ["string", "null"]},
+        "valuation_date": {"type": ["string", "null"], "format": "date"}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"state": {"enum": ["PUBLISHED", "LICENSED", "SOLD"]}}, "required": ["state"]},
+      "then": {"properties": {"human_approved": {"const": true}}}
+    }
+  ]
+}
