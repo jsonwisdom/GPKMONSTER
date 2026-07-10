@@ -6,22 +6,23 @@ on:
       - schemas/**
       - policies/**
       - scripts/**
+      - migrations/**
       - tests/fixtures/**
-      - docs/LIL-PR-02.receipt.template.md
-      - docs/LIL-PR-03.receipt.template.md
+      - docs/LIL-PR-*.receipt.template.md
       - .github/workflows/lil-governance-gate.yml
   push:
     branches:
       - feat/lil-pr-01-negative-gate
       - docs/lil-pr-02-lineage-scope
       - docs/lil-pr-03-schema-scope
+      - docs/lil-pr-04-asset-ddl-scope
     paths:
       - schemas/**
       - policies/**
       - scripts/**
+      - migrations/**
       - tests/fixtures/**
-      - docs/LIL-PR-02.receipt.template.md
-      - docs/LIL-PR-03.receipt.template.md
+      - docs/LIL-PR-*.receipt.template.md
       - .github/workflows/lil-governance-gate.yml
   workflow_dispatch:
 
@@ -32,59 +33,33 @@ jobs:
   negative-gate:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
       - name: Install pinned OPA
-        shell: bash
         run: |
           set -euo pipefail
-          curl --fail --location --retry 3 \
-            https://openpolicyagent.org/downloads/v1.0.0/opa_linux_amd64_static \
-            --output /tmp/opa
+          curl --fail --location --retry 3 https://openpolicyagent.org/downloads/v1.0.0/opa_linux_amd64_static --output /tmp/opa
           chmod +x /tmp/opa
-          /tmp/opa version
-
-      - name: Validate policy syntax
-        run: /tmp/opa check policies/living_image_ledger.rego
-
       - name: Witness constitutional rejection
-        shell: bash
         run: |
           set -euo pipefail
-          invalid_result="$(/tmp/opa eval --format raw \
-            --data policies/living_image_ledger.rego \
-            --input tests/fixtures/invalid/unapproved_execution.json \
-            'data.living_image_ledger.allow')"
-
-          valid_result="$(/tmp/opa eval --format raw \
-            --data policies/living_image_ledger.rego \
-            --input tests/fixtures/valid/proposed_operation.json \
-            'data.living_image_ledger.allow')"
-
-          test "$invalid_result" = "false"
-          test "$valid_result" = "true"
-
+          /tmp/opa check policies/living_image_ledger.rego
+          invalid_result="$(/tmp/opa eval --format raw --data policies/living_image_ledger.rego --input tests/fixtures/invalid/unapproved_execution.json 'data.living_image_ledger.allow')"
+          valid_result="$(/tmp/opa eval --format raw --data policies/living_image_ledger.rego --input tests/fixtures/valid/proposed_operation.json 'data.living_image_ledger.allow')"
+          test "$invalid_result" = false
+          test "$valid_result" = true
           mkdir -p dist
-          invalid_sha256="$(sha256sum tests/fixtures/invalid/unapproved_execution.json | cut -d' ' -f1)"
-          policy_sha256="$(sha256sum policies/living_image_ledger.rego | cut -d' ' -f1)"
-
           cat > dist/LIL_PR_01_GATE_RECEIPT.txt <<EOF
           issue=2
           property=EXECUTED_AND_HUMAN_APPROVED_FALSE_IS_REJECTED
           invalid_fixture_result=$invalid_result
           positive_control_result=$valid_result
-          invalid_fixture_sha256=$invalid_sha256
-          policy_sha256=$policy_sha256
+          invalid_fixture_sha256=$(sha256sum tests/fixtures/invalid/unapproved_execution.json | cut -d' ' -f1)
+          policy_sha256=$(sha256sum policies/living_image_ledger.rego | cut -d' ' -f1)
           authority=false
           conclusion=CONSTITUTIONAL_PASS
           EOF
-
-          cat dist/LIL_PR_01_GATE_RECEIPT.txt
           echo "CONSTITUTIONAL_PASS: Unapproved execution correctly rejected"
-
-      - name: Upload gate receipt
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: lil-pr-01-negative-gate-receipt
           path: dist/LIL_PR_01_GATE_RECEIPT.txt
@@ -94,67 +69,26 @@ jobs:
   lineage_negative_gate:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
       - name: Install pinned OPA
-        shell: bash
         run: |
           set -euo pipefail
-          curl --fail --location --retry 3 \
-            https://openpolicyagent.org/downloads/v1.0.0/opa_linux_amd64_static \
-            --output /tmp/opa
+          curl --fail --location --retry 3 https://openpolicyagent.org/downloads/v1.0.0/opa_linux_amd64_static --output /tmp/opa
           chmod +x /tmp/opa
-          /tmp/opa version
-
-      - name: Validate policy syntax
-        run: /tmp/opa check policies/living_image_ledger.rego
-
       - name: Test missing parent must deny
-        id: lineage_gate
-        shell: bash
         run: |
           set -euo pipefail
-
+          /tmp/opa check policies/living_image_ledger.rego
           cat > /tmp/valid_parent_lineage.json <<'JSON'
-          {
-            "receipt_id": "LIL-LINEAGE-VALID-001",
-            "asset_id": "LIL-ASSET-GPK-CHILD-001",
-            "asset_version_id": "LIL-ASSET-GPK-CHILD-001@v1",
-            "asset_role": "DERIVED",
-            "parent_asset_version_id": "LIL-ASSET-GPK-PARENT-001@v1",
-            "parent_exists": true,
-            "authority": false
-          }
+          {"receipt_id":"LIL-LINEAGE-VALID-001","asset_id":"LIL-ASSET-GPK-CHILD-001","asset_version_id":"LIL-ASSET-GPK-CHILD-001@v1","asset_role":"DERIVED","parent_asset_version_id":"LIL-ASSET-GPK-PARENT-001@v1","parent_exists":true,"authority":false}
           JSON
-
-          missing_parent_result="$(/tmp/opa eval --format raw \
-            --data policies/living_image_ledger.rego \
-            --input tests/fixtures/invalid/missing_parent_lineage.json \
-            'data.living_image_ledger.allow')"
-
-          valid_parent_result="$(/tmp/opa eval --format raw \
-            --data policies/living_image_ledger.rego \
-            --input /tmp/valid_parent_lineage.json \
-            'data.living_image_ledger.allow')"
-
-          deny_count="$(/tmp/opa eval --format raw \
-            --data policies/living_image_ledger.rego \
-            --input tests/fixtures/invalid/missing_parent_lineage.json \
-            'count(data.living_image_ledger.deny)')"
-
-          test "$missing_parent_result" = "false"
-          test "$valid_parent_result" = "true"
-          test "$deny_count" = "1"
-
-          echo "deny_count=$deny_count" >> "$GITHUB_OUTPUT"
-          echo "missing_parent_result=$missing_parent_result" >> "$GITHUB_OUTPUT"
-          echo "valid_parent_result=$valid_parent_result" >> "$GITHUB_OUTPUT"
-
+          missing_parent_result="$(/tmp/opa eval --format raw --data policies/living_image_ledger.rego --input tests/fixtures/invalid/missing_parent_lineage.json 'data.living_image_ledger.allow')"
+          valid_parent_result="$(/tmp/opa eval --format raw --data policies/living_image_ledger.rego --input /tmp/valid_parent_lineage.json 'data.living_image_ledger.allow')"
+          deny_count="$(/tmp/opa eval --format raw --data policies/living_image_ledger.rego --input tests/fixtures/invalid/missing_parent_lineage.json 'count(data.living_image_ledger.deny)')"
+          test "$missing_parent_result" = false
+          test "$valid_parent_result" = true
+          test "$deny_count" = 1
           mkdir -p dist
-          negative_fixture_sha256="$(sha256sum tests/fixtures/invalid/missing_parent_lineage.json | cut -d' ' -f1)"
-          policy_sha256="$(sha256sum policies/living_image_ledger.rego | cut -d' ' -f1)"
-
           cat > dist/LIL_PR_02_LINEAGE_GATE_RECEIPT.txt <<EOF
           issue=2
           scope=LIL_PR_02_LINEAGE_POLICY_NEGATIVE_GATE
@@ -162,17 +96,13 @@ jobs:
           missing_parent_result=$missing_parent_result
           valid_parent_result=$valid_parent_result
           deny_count=$deny_count
-          negative_fixture_sha256=$negative_fixture_sha256
-          policy_sha256=$policy_sha256
+          negative_fixture_sha256=$(sha256sum tests/fixtures/invalid/missing_parent_lineage.json | cut -d' ' -f1)
+          policy_sha256=$(sha256sum policies/living_image_ledger.rego | cut -d' ' -f1)
           authority=false
           conclusion=CONSTITUTIONAL_PASS
           EOF
-
-          cat dist/LIL_PR_02_LINEAGE_GATE_RECEIPT.txt
           echo "CONSTITUTIONAL_PASS: Missing parent correctly rejected"
-
-      - name: Upload lineage gate log
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: lil-governance-gate-log
           path: dist/LIL_PR_02_LINEAGE_GATE_RECEIPT.txt
@@ -182,75 +112,122 @@ jobs:
   schema_validation_gate:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '24'
-
-      - name: Install pinned AJV
-        shell: bash
+      - name: Test operation intent schema controls
         run: |
           set -euo pipefail
           npm install --no-save --ignore-scripts ajv@8.17.1
-          node -p "require('ajv/package.json').version"
-
-      - name: Test operation intent schema controls
-        id: schema_gate
-        shell: bash
-        run: |
-          set -euo pipefail
-
           set +e
-          node scripts/validate-schema.js \
-            schemas/operation_intent.schema.json \
-            tests/fixtures/invalid/missing_asset_id.json
+          node scripts/validate-schema.js schemas/operation_intent.schema.json tests/fixtures/invalid/missing_asset_id.json
           negative_exit_code=$?
-
-          node scripts/validate-schema.js \
-            schemas/operation_intent.schema.json \
-            tests/fixtures/valid/positive_control_operation_intent.json
+          node scripts/validate-schema.js schemas/operation_intent.schema.json tests/fixtures/valid/positive_control_operation_intent.json
           positive_exit_code=$?
           set -e
-
-          test "$negative_exit_code" = "1"
-          test "$positive_exit_code" = "0"
-
-          echo "negative_exit_code=$negative_exit_code" >> "$GITHUB_OUTPUT"
-          echo "positive_exit_code=$positive_exit_code" >> "$GITHUB_OUTPUT"
-
+          test "$negative_exit_code" = 1
+          test "$positive_exit_code" = 0
           mkdir -p dist
-          validator_version="$(node -p "require('ajv/package.json').version")"
-          schema_sha256="$(sha256sum schemas/operation_intent.schema.json | cut -d' ' -f1)"
-          negative_fixture_sha256="$(sha256sum tests/fixtures/invalid/missing_asset_id.json | cut -d' ' -f1)"
-          positive_fixture_sha256="$(sha256sum tests/fixtures/valid/positive_control_operation_intent.json | cut -d' ' -f1)"
-          validator_script_sha256="$(sha256sum scripts/validate-schema.js | cut -d' ' -f1)"
-
           cat > dist/LIL_PR_03_SCHEMA_GATE_RECEIPT.txt <<EOF
           issue=2
           scope=LIL_PR_03_SCHEMA_VALIDATION_ENFORCEMENT
           property=OPERATION_INTENT_MISSING_REQUIRED_FIELD_IS_REJECTED
           validator=ajv
-          validator_version=$validator_version
+          validator_version=$(node -p "require('ajv/package.json').version")
           negative_exit_code=$negative_exit_code
           positive_exit_code=$positive_exit_code
-          schema_sha256=$schema_sha256
+          schema_sha256=$(sha256sum schemas/operation_intent.schema.json | cut -d' ' -f1)
+          negative_fixture_sha256=$(sha256sum tests/fixtures/invalid/missing_asset_id.json | cut -d' ' -f1)
+          positive_fixture_sha256=$(sha256sum tests/fixtures/valid/positive_control_operation_intent.json | cut -d' ' -f1)
+          validator_script_sha256=$(sha256sum scripts/validate-schema.js | cut -d' ' -f1)
+          authority=false
+          conclusion=CONSTITUTIONAL_PASS
+          EOF
+          echo "CONSTITUTIONAL_PASS: Missing asset_id correctly rejected"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lil-pr-03-schema-validation-receipt
+          path: dist/LIL_PR_03_SCHEMA_GATE_RECEIPT.txt
+          if-no-files-found: error
+          retention-days: 30
+
+  asset_ddl_gate:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16.4
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: lil_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d lil_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: lil_test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply asset migration
+        run: |
+          set -euo pipefail
+          psql -v ON_ERROR_STOP=1 -f migrations/001_asset_table.sql
+      - name: Test asset ID constraint
+        id: asset_ddl
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+
+          set +e
+          psql -v ON_ERROR_STOP=1 -f tests/fixtures/invalid/invalid_asset_insert.sql >dist/invalid_stdout.log 2>dist/psql_error.log
+          invalid_asset_insert_exit=$?
+          psql -v ON_ERROR_STOP=1 -f tests/fixtures/valid/valid_asset_insert.sql >dist/valid_stdout.log 2>dist/valid_stderr.log
+          valid_asset_insert_exit=$?
+          set -e
+
+          test "$invalid_asset_insert_exit" -ne 0
+          test "$valid_asset_insert_exit" -eq 0
+          grep -F 'violates check constraint "asset_id_format"' dist/psql_error.log
+
+          postgres_version="$(psql -Atqc 'SHOW server_version;')"
+          migration_sha256="$(sha256sum migrations/001_asset_table.sql | cut -d' ' -f1)"
+          negative_fixture_sha256="$(sha256sum tests/fixtures/invalid/invalid_asset_insert.sql | cut -d' ' -f1)"
+          positive_fixture_sha256="$(sha256sum tests/fixtures/valid/valid_asset_insert.sql | cut -d' ' -f1)"
+          error_log_sha256="$(sha256sum dist/psql_error.log | cut -d' ' -f1)"
+
+          cat > dist/LIL_PR_04_ASSET_DDL_RECEIPT.txt <<EOF
+          issue=2
+          scope=LIL_PR_04_ASSET_TABLE_DDL_CONSTRAINT
+          property=INSERT_ASSET_WITH_INVALID_ID_FORMAT_IS_REJECTED
+          postgres_version=$postgres_version
+          constraint_name=asset_id_format
+          invalid_asset_insert_exit=$invalid_asset_insert_exit
+          valid_asset_insert_exit=$valid_asset_insert_exit
+          migration_sha256=$migration_sha256
           negative_fixture_sha256=$negative_fixture_sha256
           positive_fixture_sha256=$positive_fixture_sha256
-          validator_script_sha256=$validator_script_sha256
+          error_log_sha256=$error_log_sha256
           authority=false
           conclusion=CONSTITUTIONAL_PASS
           EOF
 
-          cat dist/LIL_PR_03_SCHEMA_GATE_RECEIPT.txt
-          echo "CONSTITUTIONAL_PASS: Missing asset_id correctly rejected"
-
-      - name: Upload schema validation receipt
+          cat dist/psql_error.log
+          cat dist/LIL_PR_04_ASSET_DDL_RECEIPT.txt
+          echo "CONSTITUTIONAL_PASS: Invalid asset ID correctly rejected"
+      - name: Upload asset DDL receipt
         uses: actions/upload-artifact@v4
         with:
-          name: lil-pr-03-schema-validation-receipt
-          path: dist/LIL_PR_03_SCHEMA_GATE_RECEIPT.txt
+          name: lil-pr-04-asset-ddl-receipt
+          path: |
+            dist/LIL_PR_04_ASSET_DDL_RECEIPT.txt
+            dist/psql_error.log
           if-no-files-found: error
           retention-days: 30
