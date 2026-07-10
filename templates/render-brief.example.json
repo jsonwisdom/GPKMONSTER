@@ -1,0 +1,27 @@
+{
+  "asset_id": "ORIGINAL-ASSET-001",
+  "title": "Original Character Title",
+  "format": "widescreen satirical learning illustration",
+  "concept": "Describe the original character, visual joke, setting, and educational point.",
+  "lesson": "State the memorable lesson in one sentence.",
+  "purpose": ["satire", "education", "coaching"],
+  "audience": "general",
+  "discussion_questions": [
+    "What is the character doing wrong or learning?",
+    "What choice would improve the outcome?",
+    "Where does this lesson appear in real life?"
+  ],
+  "product": {
+    "sku": "ORIGINAL-ASSET-001-DIGITAL",
+    "license": "personal-and-classroom-use",
+    "price_status": "unset"
+  },
+  "originality_requirements": [
+    "original character name",
+    "original face, silhouette, clothing, and pose",
+    "original border and typography",
+    "no existing logo",
+    "no official affiliation"
+  ],
+  "authority": false
+}
