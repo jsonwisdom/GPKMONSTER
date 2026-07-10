@@ -1,0 +1,84 @@
+name: LIL Governance Gate
+
+on:
+  pull_request:
+    paths:
+      - schemas/**
+      - policies/**
+      - tests/fixtures/**
+      - .github/workflows/lil-governance-gate.yml
+  push:
+    branches:
+      - feat/lil-pr-01-negative-gate
+    paths:
+      - schemas/**
+      - policies/**
+      - tests/fixtures/**
+      - .github/workflows/lil-governance-gate.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  negative-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install pinned OPA
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 \
+            https://openpolicyagent.org/downloads/v1.0.0/opa_linux_amd64_static \
+            --output /tmp/opa
+          chmod +x /tmp/opa
+          /tmp/opa version
+
+      - name: Validate policy syntax
+        run: /tmp/opa check policies/living_image_ledger.rego
+
+      - name: Witness constitutional rejection
+        shell: bash
+        run: |
+          set -euo pipefail
+          invalid_result="$(/tmp/opa eval --format raw \
+            --data policies/living_image_ledger.rego \
+            --input tests/fixtures/invalid/unapproved_execution.json \
+            'data.living_image_ledger.allow')"
+
+          valid_result="$(/tmp/opa eval --format raw \
+            --data policies/living_image_ledger.rego \
+            --input tests/fixtures/valid/proposed_operation.json \
+            'data.living_image_ledger.allow')"
+
+          test "$invalid_result" = "false"
+          test "$valid_result" = "true"
+
+          mkdir -p dist
+          invalid_sha256="$(sha256sum tests/fixtures/invalid/unapproved_execution.json | cut -d' ' -f1)"
+          policy_sha256="$(sha256sum policies/living_image_ledger.rego | cut -d' ' -f1)"
+
+          cat > dist/LIL_PR_01_GATE_RECEIPT.txt <<EOF
+          issue=2
+          property=EXECUTED_AND_HUMAN_APPROVED_FALSE_IS_REJECTED
+          invalid_fixture_result=$invalid_result
+          positive_control_result=$valid_result
+          invalid_fixture_sha256=$invalid_sha256
+          policy_sha256=$policy_sha256
+          authority=false
+          conclusion=CONSTITUTIONAL_PASS
+          EOF
+
+          cat dist/LIL_PR_01_GATE_RECEIPT.txt
+          echo "CONSTITUTIONAL_PASS: Unapproved execution correctly rejected"
+
+      - name: Upload gate receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: lil-pr-01-negative-gate-receipt
+          path: dist/LIL_PR_01_GATE_RECEIPT.txt
+          if-no-files-found: error
+          retention-days: 30
