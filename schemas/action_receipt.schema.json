@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jsonwisdom/GPKMONSTER/schemas/action_receipt.schema.json",
+  "title": "Living Image Ledger Action Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["receipt_id", "intent_id", "intent_sha256", "asset_id", "state", "human_approved", "authority"],
+  "properties": {
+    "receipt_id": {"type": "string", "minLength": 1},
+    "intent_id": {"type": "string", "minLength": 1},
+    "intent_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "asset_id": {"type": "string", "minLength": 1},
+    "state": {"enum": ["PROPOSED", "AUTHORIZED", "EXECUTED", "PUBLISHED", "VERIFIED"]},
+    "human_approved": {"type": "boolean"},
+    "authority": {"const": false}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"state": {"enum": ["EXECUTED", "PUBLISHED"]}}, "required": ["state"]},
+      "then": {"properties": {"human_approved": {"const": true}}}
+    }
+  ]
+}
