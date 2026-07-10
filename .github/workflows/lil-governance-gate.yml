@@ -16,6 +16,7 @@ on:
       - docs/lil-pr-02-lineage-scope
       - docs/lil-pr-03-schema-scope
       - docs/lil-pr-04-asset-ddl-scope
+      - docs/lil-pr-05-lineage-fk-scope
     paths:
       - schemas/**
       - policies/**
@@ -181,53 +182,115 @@ jobs:
           set -euo pipefail
           psql -v ON_ERROR_STOP=1 -f migrations/001_asset_table.sql
       - name: Test asset ID constraint
-        id: asset_ddl
         run: |
           set -euo pipefail
           mkdir -p dist
-
           set +e
           psql -v ON_ERROR_STOP=1 -f tests/fixtures/invalid/invalid_asset_insert.sql >dist/invalid_stdout.log 2>dist/psql_error.log
           invalid_asset_insert_exit=$?
           psql -v ON_ERROR_STOP=1 -f tests/fixtures/valid/valid_asset_insert.sql >dist/valid_stdout.log 2>dist/valid_stderr.log
           valid_asset_insert_exit=$?
           set -e
-
           test "$invalid_asset_insert_exit" -ne 0
           test "$valid_asset_insert_exit" -eq 0
           grep -F 'violates check constraint "asset_id_format"' dist/psql_error.log
-
-          postgres_version="$(psql -Atqc 'SHOW server_version;')"
-          migration_sha256="$(sha256sum migrations/001_asset_table.sql | cut -d' ' -f1)"
-          negative_fixture_sha256="$(sha256sum tests/fixtures/invalid/invalid_asset_insert.sql | cut -d' ' -f1)"
-          positive_fixture_sha256="$(sha256sum tests/fixtures/valid/valid_asset_insert.sql | cut -d' ' -f1)"
-          error_log_sha256="$(sha256sum dist/psql_error.log | cut -d' ' -f1)"
-
           cat > dist/LIL_PR_04_ASSET_DDL_RECEIPT.txt <<EOF
           issue=2
           scope=LIL_PR_04_ASSET_TABLE_DDL_CONSTRAINT
           property=INSERT_ASSET_WITH_INVALID_ID_FORMAT_IS_REJECTED
-          postgres_version=$postgres_version
+          postgres_version=$(psql -Atqc 'SHOW server_version;')
           constraint_name=asset_id_format
           invalid_asset_insert_exit=$invalid_asset_insert_exit
           valid_asset_insert_exit=$valid_asset_insert_exit
-          migration_sha256=$migration_sha256
-          negative_fixture_sha256=$negative_fixture_sha256
-          positive_fixture_sha256=$positive_fixture_sha256
-          error_log_sha256=$error_log_sha256
+          migration_sha256=$(sha256sum migrations/001_asset_table.sql | cut -d' ' -f1)
+          negative_fixture_sha256=$(sha256sum tests/fixtures/invalid/invalid_asset_insert.sql | cut -d' ' -f1)
+          positive_fixture_sha256=$(sha256sum tests/fixtures/valid/valid_asset_insert.sql | cut -d' ' -f1)
+          error_log_sha256=$(sha256sum dist/psql_error.log | cut -d' ' -f1)
           authority=false
           conclusion=CONSTITUTIONAL_PASS
           EOF
-
-          cat dist/psql_error.log
-          cat dist/LIL_PR_04_ASSET_DDL_RECEIPT.txt
           echo "CONSTITUTIONAL_PASS: Invalid asset ID correctly rejected"
-      - name: Upload asset DDL receipt
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: lil-pr-04-asset-ddl-receipt
           path: |
             dist/LIL_PR_04_ASSET_DDL_RECEIPT.txt
             dist/psql_error.log
+          if-no-files-found: error
+          retention-days: 30
+
+  lineage_fk_gate:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16.4
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: lil_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d lil_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: lil_test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply asset and lineage migrations
+        run: |
+          set -euo pipefail
+          psql -v ON_ERROR_STOP=1 -f migrations/001_asset_table.sql
+          psql -v ON_ERROR_STOP=1 -f migrations/002_lineage_edge_table.sql
+      - name: Test child asset foreign key
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+
+          set +e
+          psql -v ON_ERROR_STOP=1 -f tests/fixtures/invalid/invalid_lineage_edge_insert.sql >dist/invalid_lineage_stdout.log 2>dist/lineage_fk_error.log
+          orphan_child_insert_exit=$?
+          psql -v ON_ERROR_STOP=1 -f tests/fixtures/valid/valid_lineage_edge_insert.sql >dist/valid_lineage_stdout.log 2>dist/valid_lineage_stderr.log
+          valid_lineage_edge_insert_exit=$?
+          set -e
+
+          test "$orphan_child_insert_exit" -ne 0
+          test "$valid_lineage_edge_insert_exit" -eq 0
+          grep -F 'violates foreign key constraint "lineage_edge_child_asset_fk"' dist/lineage_fk_error.log
+          grep -F 'INSERT 0 1' dist/valid_lineage_stdout.log
+
+          cat > dist/LIL_PR_05_LINEAGE_FK_RECEIPT.txt <<EOF
+          issue=2
+          scope=LIL_PR_05_LINEAGE_EDGE_FK_CONSTRAINT
+          property=INSERT_LINEAGE_EDGE_WITH_NONEXISTENT_CHILD_IS_REJECTED
+          postgres_version=$(psql -Atqc 'SHOW server_version;')
+          constraint_name=lineage_edge_child_asset_fk
+          orphan_child_insert_exit=$orphan_child_insert_exit
+          valid_lineage_edge_insert_exit=$valid_lineage_edge_insert_exit
+          asset_migration_sha256=$(sha256sum migrations/001_asset_table.sql | cut -d' ' -f1)
+          lineage_migration_sha256=$(sha256sum migrations/002_lineage_edge_table.sql | cut -d' ' -f1)
+          negative_fixture_sha256=$(sha256sum tests/fixtures/invalid/invalid_lineage_edge_insert.sql | cut -d' ' -f1)
+          positive_fixture_sha256=$(sha256sum tests/fixtures/valid/valid_lineage_edge_insert.sql | cut -d' ' -f1)
+          error_log_sha256=$(sha256sum dist/lineage_fk_error.log | cut -d' ' -f1)
+          authority=false
+          conclusion=CONSTITUTIONAL_PASS
+          EOF
+
+          cat dist/lineage_fk_error.log
+          cat dist/LIL_PR_05_LINEAGE_FK_RECEIPT.txt
+          echo "CONSTITUTIONAL_PASS: Nonexistent child asset correctly rejected"
+      - name: Upload lineage FK receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: lil-pr-05-lineage-fk-receipt
+          path: |
+            dist/LIL_PR_05_LINEAGE_FK_RECEIPT.txt
+            dist/lineage_fk_error.log
           if-no-files-found: error
           retention-days: 30
