@@ -1,0 +1,9 @@
+{
+  "receipt_id": "LIL-LINEAGE-INVALID-001",
+  "asset_id": "LIL-ASSET-GPK-CHILD-001",
+  "asset_version_id": "LIL-ASSET-GPK-CHILD-001@v1",
+  "asset_role": "DERIVED",
+  "parent_asset_version_id": "LIL-ASSET-GPK-MISSING@v1",
+  "parent_exists": false,
+  "authority": false
+}
