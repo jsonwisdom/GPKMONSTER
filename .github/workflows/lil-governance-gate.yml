@@ -6,14 +6,17 @@ on:
       - schemas/**
       - policies/**
       - tests/fixtures/**
+      - docs/LIL-PR-02.receipt.template.md
       - .github/workflows/lil-governance-gate.yml
   push:
     branches:
       - feat/lil-pr-01-negative-gate
+      - docs/lil-pr-02-lineage-scope
     paths:
       - schemas/**
       - policies/**
       - tests/fixtures/**
+      - docs/LIL-PR-02.receipt.template.md
       - .github/workflows/lil-governance-gate.yml
   workflow_dispatch:
 
@@ -80,5 +83,93 @@ jobs:
         with:
           name: lil-pr-01-negative-gate-receipt
           path: dist/LIL_PR_01_GATE_RECEIPT.txt
+          if-no-files-found: error
+          retention-days: 30
+
+  lineage_negative_gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install pinned OPA
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 \
+            https://openpolicyagent.org/downloads/v1.0.0/opa_linux_amd64_static \
+            --output /tmp/opa
+          chmod +x /tmp/opa
+          /tmp/opa version
+
+      - name: Validate policy syntax
+        run: /tmp/opa check policies/living_image_ledger.rego
+
+      - name: Test missing parent must deny
+        id: lineage_gate
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          cat > /tmp/valid_parent_lineage.json <<'JSON'
+          {
+            "receipt_id": "LIL-LINEAGE-VALID-001",
+            "asset_id": "LIL-ASSET-GPK-CHILD-001",
+            "asset_version_id": "LIL-ASSET-GPK-CHILD-001@v1",
+            "asset_role": "DERIVED",
+            "parent_asset_version_id": "LIL-ASSET-GPK-PARENT-001@v1",
+            "parent_exists": true,
+            "authority": false
+          }
+          JSON
+
+          missing_parent_result="$(/tmp/opa eval --format raw \
+            --data policies/living_image_ledger.rego \
+            --input tests/fixtures/invalid/missing_parent_lineage.json \
+            'data.living_image_ledger.allow')"
+
+          valid_parent_result="$(/tmp/opa eval --format raw \
+            --data policies/living_image_ledger.rego \
+            --input /tmp/valid_parent_lineage.json \
+            'data.living_image_ledger.allow')"
+
+          deny_count="$(/tmp/opa eval --format raw \
+            --data policies/living_image_ledger.rego \
+            --input tests/fixtures/invalid/missing_parent_lineage.json \
+            'count(data.living_image_ledger.deny)')"
+
+          test "$missing_parent_result" = "false"
+          test "$valid_parent_result" = "true"
+          test "$deny_count" = "1"
+
+          echo "deny_count=$deny_count" >> "$GITHUB_OUTPUT"
+          echo "missing_parent_result=$missing_parent_result" >> "$GITHUB_OUTPUT"
+          echo "valid_parent_result=$valid_parent_result" >> "$GITHUB_OUTPUT"
+
+          mkdir -p dist
+          negative_fixture_sha256="$(sha256sum tests/fixtures/invalid/missing_parent_lineage.json | cut -d' ' -f1)"
+          policy_sha256="$(sha256sum policies/living_image_ledger.rego | cut -d' ' -f1)"
+
+          cat > dist/LIL_PR_02_LINEAGE_GATE_RECEIPT.txt <<EOF
+          issue=2
+          scope=LIL_PR_02_LINEAGE_POLICY_NEGATIVE_GATE
+          property=DERIVED_ASSET_WITH_MISSING_PARENT_IS_REJECTED
+          missing_parent_result=$missing_parent_result
+          valid_parent_result=$valid_parent_result
+          deny_count=$deny_count
+          negative_fixture_sha256=$negative_fixture_sha256
+          policy_sha256=$policy_sha256
+          authority=false
+          conclusion=CONSTITUTIONAL_PASS
+          EOF
+
+          cat dist/LIL_PR_02_LINEAGE_GATE_RECEIPT.txt
+          echo "CONSTITUTIONAL_PASS: Missing parent correctly rejected"
+
+      - name: Upload lineage gate log
+        uses: actions/upload-artifact@v4
+        with:
+          name: lil-governance-gate-log
+          path: dist/LIL_PR_02_LINEAGE_GATE_RECEIPT.txt
           if-no-files-found: error
           retention-days: 30
