@@ -1,0 +1,56 @@
+name: Render Asset Factory
+
+on:
+  workflow_call:
+    inputs:
+      brief_path:
+        required: true
+        type: string
+      source_path:
+        required: true
+        type: string
+      artifact_name:
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      brief_path:
+        description: Repository path to render brief JSON
+        required: true
+      source_path:
+        description: Repository path to rendered image
+        required: true
+      artifact_name:
+        description: Artifact package name
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile persistent constitutional prompt
+        run: |
+          set -euo pipefail
+          python3 scripts/compile-render-prompt.py \
+            --constitution rendering/original-satire-constitution.json \
+            --brief "${{ inputs.brief_path }}" \
+            --output-dir dist
+          grep -F 'Official affiliation: false' dist/render_prompt.txt
+          grep -F 'Authority: false' dist/render_prompt.txt
+      - name: Package rendered image
+        run: |
+          set -euo pipefail
+          test -f "${{ inputs.source_path }}"
+          cp "${{ inputs.source_path }}" dist/rendered-image
+          cd dist
+          sha256sum rendered-image render_prompt.txt render_manifest.json > SHA256SUMS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.artifact_name }}
+          path: dist/
+          if-no-files-found: error
+          retention-days: 30
