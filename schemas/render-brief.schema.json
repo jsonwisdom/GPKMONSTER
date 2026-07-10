@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jsonwisdom/GPKMONSTER/schemas/render-brief.schema.json",
+  "title": "Image Rendering Service Factory Brief",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["asset_id", "title", "format", "concept", "lesson", "originality_requirements", "authority"],
+  "properties": {
+    "asset_id": {"type": "string", "minLength": 1},
+    "title": {"type": "string", "minLength": 1},
+    "format": {"type": "string", "minLength": 1},
+    "concept": {"type": "string", "minLength": 1},
+    "lesson": {"type": "string", "minLength": 1},
+    "purpose": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "originality_requirements": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "authority": {"const": false}
+  }
+}
