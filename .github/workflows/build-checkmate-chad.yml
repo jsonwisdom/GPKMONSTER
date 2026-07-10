@@ -1,0 +1,90 @@
+name: Build Checkmate Chad
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_url:
+        description: Direct PNG source URL
+        required: false
+        default: https://drive.google.com/uc?export=download&id=1JI0iXvDMsi8YTgKMVFabB1NpORFYuFTe
+  push:
+    paths:
+      - assets/checkmate-chad/**
+      - .github/workflows/build-checkmate-chad.yml
+  pull_request:
+    paths:
+      - assets/checkmate-chad/**
+      - .github/workflows/build-checkmate-chad.yml
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare source asset
+        shell: bash
+        env:
+          INPUT_URL: ${{ github.event.inputs.source_url }}
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          if [[ -f assets/checkmate-chad/CHECKMATE_CHAD_Widescreen_Parody.png ]]; then
+            cp assets/checkmate-chad/CHECKMATE_CHAD_Widescreen_Parody.png dist/checkmate-chad.png
+          else
+            url="${INPUT_URL:-https://drive.google.com/uc?export=download&id=1JI0iXvDMsi8YTgKMVFabB1NpORFYuFTe}"
+            curl --fail --location --retry 3 --output dist/checkmate-chad.png "$url"
+          fi
+
+      - name: Validate PNG and dimensions
+        run: |
+          python3 - <<'PY'
+          import json, struct
+          from pathlib import Path
+
+          path = Path('dist/checkmate-chad.png')
+          data = path.read_bytes()
+          if data[:8] != b'\x89PNG\r\n\x1a\n':
+              raise SystemExit('FAIL: downloaded file is not a PNG')
+          width, height = struct.unpack('>II', data[16:24])
+          if width < 1600 or height < 900:
+              raise SystemExit(f'FAIL: resolution {width}x{height} is below 1600x900')
+          ratio = width / height
+          if not 1.70 <= ratio <= 1.82:
+              raise SystemExit(f'FAIL: aspect ratio {ratio:.4f} is not widescreen')
+          metadata = {
+              'title': 'CHECKMATE CHAD',
+              'file': path.name,
+              'width': width,
+              'height': height,
+              'aspect_ratio': ratio,
+              'parody': True,
+              'authority': False,
+              'validation': 'observed_by_workflow'
+          }
+          Path('dist/metadata.json').write_text(json.dumps(metadata, indent=2) + '\n')
+          print(json.dumps(metadata, indent=2))
+          PY
+
+      - name: Generate SHA-256 receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd dist
+          sha256sum checkmate-chad.png > SHA256SUMS
+          cat SHA256SUMS
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: checkmate-chad-widescreen
+          path: |
+            dist/checkmate-chad.png
+            dist/metadata.json
+            dist/SHA256SUMS
+          if-no-files-found: error
+          retention-days: 30
