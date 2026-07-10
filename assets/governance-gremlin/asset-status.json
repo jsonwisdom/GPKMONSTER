@@ -1,0 +1,18 @@
+{
+  "asset_id": "GOVERNANCE-GREMLIN-001",
+  "current_state": "RENDERED",
+  "record_status": "INCOMPLETE",
+  "missing_inputs": [
+    "stable image repository or storage link",
+    "human review decision",
+    "human approval decision",
+    "lesson file",
+    "package file",
+    "storefront link"
+  ],
+  "broken_links": [],
+  "pending_human_gate": true,
+  "blocked_reason": "Rendered image has not yet been reviewed by Jason.",
+  "next_action": "REVIEW_IMAGE",
+  "authority": false
+}

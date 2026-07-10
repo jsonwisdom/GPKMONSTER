@@ -1,0 +1,57 @@
+{
+  "asset_id": "GOVERNANCE-GREMLIN-001",
+  "title": "Governance Gremlin",
+  "asset_type": "IMAGE",
+  "state": "RENDERED",
+  "creator": "Jason",
+  "rights_holder": "Jason",
+  "original_work": true,
+  "third_party_reference": null,
+  "official_affiliation": false,
+  "human_approved": false,
+  "authority": false,
+  "file": {
+    "filename": "a_wide_colorful_comic_illustration_scene_like_a.png",
+    "media_type": "image/png",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "68902fd57d223fdb3acf0cca002dba539b2c2d02d6f74b03abc4e7af7f26fdc4"
+  },
+  "links": {
+    "image": null,
+    "metadata": null,
+    "lesson": null,
+    "package": null,
+    "provenance": null,
+    "storefront": null
+  },
+  "commercial": {
+    "status": "DRAFT",
+    "currency": "USD",
+    "asking_price": null,
+    "sale_price": null,
+    "license_fee": null,
+    "internal_estimate": null,
+    "valuation_basis": null,
+    "valuation_date": null
+  },
+  "provenance": {
+    "agent_proposals": [
+      {
+        "field": "title",
+        "proposed_value": "Governance Gremlin",
+        "agent": "Asset Agent",
+        "reason": "Visible title and established working character name.",
+        "status": "PENDING"
+      },
+      {
+        "field": "commercial.status",
+        "proposed_value": "DRAFT",
+        "agent": "Asset Agent",
+        "reason": "The image exists, but human review, approval, packaging, and listing have not occurred.",
+        "status": "PENDING"
+      }
+    ],
+    "human_decisions": []
+  }
+}

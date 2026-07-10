@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jsonwisdom/GPKMONSTER/schemas/render-brief.schema.json",
+  "title": "Image Rendering Service Factory Brief",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["asset_id", "title", "format", "concept", "lesson", "purpose", "discussion_questions", "product", "originality_requirements", "authority"],
+  "properties": {
+    "asset_id": {"type": "string", "pattern": "^[A-Z0-9]+(?:-[A-Z0-9]+)*$"},
+    "title": {"type": "string", "minLength": 1},
+    "format": {"type": "string", "minLength": 1},
+    "concept": {"type": "string", "minLength": 1},
+    "lesson": {"type": "string", "minLength": 1},
+    "purpose": {"type": "array", "minItems": 1, "items": {"enum": ["satire", "parody", "comics", "education", "coaching"]}, "uniqueItems": true},
+    "audience": {"type": "string", "minLength": 1},
+    "discussion_questions": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "product": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sku", "license", "price_status"],
+      "properties": {
+        "sku": {"type": "string", "minLength": 1},
+        "license": {"type": "string", "minLength": 1},
+        "price_status": {"enum": ["unset", "draft", "approved"]}
+      }
+    },
+    "originality_requirements": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "authority": {"const": false}
+  }
+}
