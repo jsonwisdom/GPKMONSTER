@@ -1,0 +1,141 @@
+name: LIL PR-06 Parent FK Gate
+
+on:
+  pull_request:
+    paths:
+      - migrations/003_lineage_parent_fk.sql
+      - tests/fixtures/invalid/invalid_lineage_parent_insert.sql
+      - tests/fixtures/valid/valid_lineage_parent_insert.sql
+      - docs/LIL-PR-06.receipt.template.md
+      - .github/workflows/lil-pr-06-parent-fk-gate.yml
+  push:
+    branches:
+      - docs/lil-pr-06-parent-fk-artifacts
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lineage_parent_fk_gate:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16.4
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: lil_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d lil_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: lil_test
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Apply predecessor migrations
+        run: |
+          set -euo pipefail
+          psql -v ON_ERROR_STOP=1 -f migrations/001_asset_table.sql
+          psql -v ON_ERROR_STOP=1 -f migrations/002_lineage_edge_table.sql
+
+      - name: Seed pre-existing valid lineage row
+        run: |
+          set -euo pipefail
+          psql -v ON_ERROR_STOP=1 <<'SQL'
+          INSERT INTO asset (asset_id, title, authority)
+          VALUES
+            ('LIL-ASSET-P06-SEED-PARENT', 'PR-06 seed parent', FALSE),
+            ('LIL-ASSET-P06-SEED-CHILD', 'PR-06 seed child', FALSE);
+
+          INSERT INTO lineage_edge (
+            lineage_edge_id,
+            parent_asset_id,
+            child_asset_id,
+            authority
+          ) VALUES (
+            'LIL-EDGE-P06-SEED-001',
+            'LIL-ASSET-P06-SEED-PARENT',
+            'LIL-ASSET-P06-SEED-CHILD',
+            FALSE
+          );
+          SQL
+
+      - name: Capture pre-migration preservation witness
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          psql -Atqc "SELECT count(*) FROM lineage_edge;" > dist/pre_row_count.txt
+          psql -Atqc "SELECT md5(string_agg(lineage_edge_id || '|' || parent_asset_id || '|' || child_asset_id, E'\n' ORDER BY lineage_edge_id)) FROM lineage_edge;" > dist/pre_data_digest.txt
+
+      - name: Apply parent FK migration
+        run: |
+          set -euo pipefail
+          psql -v ON_ERROR_STOP=1 -f migrations/003_lineage_parent_fk.sql
+
+      - name: Test parent foreign key and preservation
+        run: |
+          set -euo pipefail
+
+          set +e
+          psql -v ON_ERROR_STOP=1 -f tests/fixtures/invalid/invalid_lineage_parent_insert.sql >dist/invalid_parent_stdout.log 2>dist/parent_fk_error.log
+          orphan_parent_insert_exit=$?
+          psql -v ON_ERROR_STOP=1 -f tests/fixtures/valid/valid_lineage_parent_insert.sql >dist/valid_parent_stdout.log 2>dist/valid_parent_stderr.log
+          valid_parent_edge_insert_exit=$?
+          set -e
+
+          test "$orphan_parent_insert_exit" -ne 0
+          test "$valid_parent_edge_insert_exit" -eq 0
+          grep -F 'violates foreign key constraint "lineage_edge_parent_asset_fk"' dist/parent_fk_error.log
+          grep -F 'INSERT 0 1' dist/valid_parent_stdout.log
+
+          psql -Atqc "SELECT count(*) FROM lineage_edge WHERE lineage_edge_id = 'LIL-EDGE-P06-SEED-001';" > dist/post_seed_row_count.txt
+          psql -Atqc "SELECT md5(string_agg(lineage_edge_id || '|' || parent_asset_id || '|' || child_asset_id, E'\n' ORDER BY lineage_edge_id)) FROM lineage_edge WHERE lineage_edge_id = 'LIL-EDGE-P06-SEED-001';" > dist/post_seed_digest.txt
+
+          test "$(cat dist/pre_row_count.txt)" = "1"
+          test "$(cat dist/post_seed_row_count.txt)" = "1"
+          test "$(cat dist/pre_data_digest.txt)" = "$(cat dist/post_seed_digest.txt)"
+
+          cat > dist/LIL_PR_06_PARENT_FK_RECEIPT.txt <<EOF
+          issue=2
+          scope=LIL_PR_06_LINEAGE_PARENT_FK_CONSTRAINT
+          property=INSERT_LINEAGE_EDGE_WITH_NONEXISTENT_PARENT_IS_REJECTED
+          postgres_version=$(psql -Atqc 'SHOW server_version;')
+          constraint_name=lineage_edge_parent_asset_fk
+          orphan_parent_insert_exit=$orphan_parent_insert_exit
+          valid_parent_edge_insert_exit=$valid_parent_edge_insert_exit
+          preserved_seed_row_count=$(cat dist/post_seed_row_count.txt)
+          preserved_seed_digest=$(cat dist/post_seed_digest.txt)
+          parent_fk_migration_sha256=$(sha256sum migrations/003_lineage_parent_fk.sql | cut -d' ' -f1)
+          negative_fixture_sha256=$(sha256sum tests/fixtures/invalid/invalid_lineage_parent_insert.sql | cut -d' ' -f1)
+          positive_fixture_sha256=$(sha256sum tests/fixtures/valid/valid_lineage_parent_insert.sql | cut -d' ' -f1)
+          error_log_sha256=$(sha256sum dist/parent_fk_error.log | cut -d' ' -f1)
+          authority=false
+          conclusion=CONSTITUTIONAL_PASS
+          EOF
+
+          echo "CONSTITUTIONAL_PASS: Nonexistent parent correctly rejected"
+          echo "CONSTITUTIONAL_PASS: Pre-existing lineage row preserved"
+
+      - name: Upload PR-06 receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: lil-pr-06-parent-fk-receipt
+          path: |
+            dist/LIL_PR_06_PARENT_FK_RECEIPT.txt
+            dist/parent_fk_error.log
+            dist/pre_row_count.txt
+            dist/pre_data_digest.txt
+            dist/post_seed_row_count.txt
+            dist/post_seed_digest.txt
+          if-no-files-found: error
+          retention-days: 30
