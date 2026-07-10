@@ -5,18 +5,23 @@ on:
     paths:
       - schemas/**
       - policies/**
+      - scripts/**
       - tests/fixtures/**
       - docs/LIL-PR-02.receipt.template.md
+      - docs/LIL-PR-03.receipt.template.md
       - .github/workflows/lil-governance-gate.yml
   push:
     branches:
       - feat/lil-pr-01-negative-gate
       - docs/lil-pr-02-lineage-scope
+      - docs/lil-pr-03-schema-scope
     paths:
       - schemas/**
       - policies/**
+      - scripts/**
       - tests/fixtures/**
       - docs/LIL-PR-02.receipt.template.md
+      - docs/LIL-PR-03.receipt.template.md
       - .github/workflows/lil-governance-gate.yml
   workflow_dispatch:
 
@@ -171,5 +176,81 @@ jobs:
         with:
           name: lil-governance-gate-log
           path: dist/LIL_PR_02_LINEAGE_GATE_RECEIPT.txt
+          if-no-files-found: error
+          retention-days: 30
+
+  schema_validation_gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install pinned AJV
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts ajv@8.17.1
+          node -p "require('ajv/package.json').version"
+
+      - name: Test operation intent schema controls
+        id: schema_gate
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          set +e
+          node scripts/validate-schema.js \
+            schemas/operation_intent.schema.json \
+            tests/fixtures/invalid/missing_asset_id.json
+          negative_exit_code=$?
+
+          node scripts/validate-schema.js \
+            schemas/operation_intent.schema.json \
+            tests/fixtures/valid/positive_control_operation_intent.json
+          positive_exit_code=$?
+          set -e
+
+          test "$negative_exit_code" = "1"
+          test "$positive_exit_code" = "0"
+
+          echo "negative_exit_code=$negative_exit_code" >> "$GITHUB_OUTPUT"
+          echo "positive_exit_code=$positive_exit_code" >> "$GITHUB_OUTPUT"
+
+          mkdir -p dist
+          validator_version="$(node -p "require('ajv/package.json').version")"
+          schema_sha256="$(sha256sum schemas/operation_intent.schema.json | cut -d' ' -f1)"
+          negative_fixture_sha256="$(sha256sum tests/fixtures/invalid/missing_asset_id.json | cut -d' ' -f1)"
+          positive_fixture_sha256="$(sha256sum tests/fixtures/valid/positive_control_operation_intent.json | cut -d' ' -f1)"
+          validator_script_sha256="$(sha256sum scripts/validate-schema.js | cut -d' ' -f1)"
+
+          cat > dist/LIL_PR_03_SCHEMA_GATE_RECEIPT.txt <<EOF
+          issue=2
+          scope=LIL_PR_03_SCHEMA_VALIDATION_ENFORCEMENT
+          property=OPERATION_INTENT_MISSING_REQUIRED_FIELD_IS_REJECTED
+          validator=ajv
+          validator_version=$validator_version
+          negative_exit_code=$negative_exit_code
+          positive_exit_code=$positive_exit_code
+          schema_sha256=$schema_sha256
+          negative_fixture_sha256=$negative_fixture_sha256
+          positive_fixture_sha256=$positive_fixture_sha256
+          validator_script_sha256=$validator_script_sha256
+          authority=false
+          conclusion=CONSTITUTIONAL_PASS
+          EOF
+
+          cat dist/LIL_PR_03_SCHEMA_GATE_RECEIPT.txt
+          echo "CONSTITUTIONAL_PASS: Missing asset_id correctly rejected"
+
+      - name: Upload schema validation receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: lil-pr-03-schema-validation-receipt
+          path: dist/LIL_PR_03_SCHEMA_GATE_RECEIPT.txt
           if-no-files-found: error
           retention-days: 30
