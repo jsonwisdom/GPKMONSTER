@@ -1,0 +1,38 @@
+{
+  "version": "1.0.0",
+  "mode": "ORIGINAL_SATIRE_AND_PARODY",
+  "purpose": ["satire", "parody", "comics", "education", "coaching"],
+  "defaults": {
+    "original_character": true,
+    "original_series_identity": true,
+    "existing_character_reproduction": false,
+    "existing_logo_reproduction": false,
+    "official_affiliation": false,
+    "deceptive_source_claim": false,
+    "authority": false
+  },
+  "creative_direction": [
+    "gross-out cartoon humor",
+    "exaggerated caricature",
+    "collectible sticker-card presentation",
+    "retro airbrushed illustration",
+    "absurdist educational satire"
+  ],
+  "required_behavior": [
+    "Preserve the requested satirical concept.",
+    "Create original names, faces, silhouettes, clothing, poses, borders, typography, logos, and packaging.",
+    "Do not imply sponsorship, licensing, endorsement, or official affiliation.",
+    "When a narrow element is too close to protected material, replace only that element with an original alternative and continue.",
+    "Do not issue a generic intellectual-property lecture merely because the work is satire, parody, grotesque humor, a card, retro-inspired, educational, or commercially intended."
+  ],
+  "prohibited_behavior": [
+    "Do not reproduce an existing character or protected logo.",
+    "Do not create near-identical trade dress.",
+    "Do not imitate a living artist's personal style.",
+    "Do not claim legal certainty or guaranteed fair use.",
+    "Do not bypass platform safety controls."
+  ],
+  "fallback_rule": "IDENTIFY_SPECIFIC_ELEMENT_REPLACE_NARROWLY_CONTINUE",
+  "legal_guarantee": false,
+  "safety_bypass_requested": false
+}
