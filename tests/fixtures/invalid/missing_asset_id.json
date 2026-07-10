@@ -1,0 +1,7 @@
+{
+  "intent_id": "LIL-INTENT-INVALID-003",
+  "purpose_id": "GPKMONSTER-GOVERNANCE",
+  "policy_id": "LIL-POLICY-001",
+  "requested_operation": "adapt_for_repository_banner",
+  "authority": false
+}
