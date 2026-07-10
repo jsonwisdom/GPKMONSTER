@@ -32,6 +32,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Validate factory inputs
+        run: |
+          set -euo pipefail
+          test -f "${{ inputs.brief_path }}"
+          test -f "${{ inputs.source_path }}"
+          python3 - <<'PY'
+          import json, re
+          from pathlib import Path
+          brief = json.loads(Path('${{ inputs.brief_path }}').read_text())
+          required = ['asset_id','title','format','concept','lesson','purpose','discussion_questions','product','originality_requirements','authority']
+          missing = [key for key in required if key not in brief]
+          if missing:
+              raise SystemExit(f'MISSING_REQUIRED_FIELDS: {missing}')
+          if not re.fullmatch(r'[A-Z0-9]+(?:-[A-Z0-9]+)*', brief['asset_id']):
+              raise SystemExit('INVALID_ASSET_ID')
+          if brief['authority'] is not False:
+              raise SystemExit('AUTHORITY_MUST_REMAIN_FALSE')
+          if brief['product']['price_status'] not in {'unset','draft','approved'}:
+              raise SystemExit('INVALID_PRICE_STATUS')
+          print('BRIEF_VALID')
+          PY
+
       - name: Compile persistent constitutional prompt
         run: |
           set -euo pipefail
@@ -41,14 +64,21 @@ jobs:
             --output-dir dist
           grep -F 'Official affiliation: false' dist/render_prompt.txt
           grep -F 'Authority: false' dist/render_prompt.txt
-      - name: Package rendered image
+
+      - name: Build learning and sales package
         run: |
           set -euo pipefail
-          test -f "${{ inputs.source_path }}"
-          cp "${{ inputs.source_path }}" dist/rendered-image
-          cd dist
-          sha256sum rendered-image render_prompt.txt render_manifest.json > SHA256SUMS
-      - uses: actions/upload-artifact@v4
+          python3 scripts/build-render-package.py \
+            --brief "${{ inputs.brief_path }}" \
+            --image "${{ inputs.source_path }}" \
+            --output-dir dist
+          test -f dist/metadata.json
+          test -f dist/lesson.md
+          test -f dist/SHA256SUMS
+          find dist -maxdepth 1 -name '*-digital-pack.zip' -print -quit | grep -q .
+
+      - name: Upload factory output
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.artifact_name }}
           path: dist/
