@@ -4,6 +4,11 @@
   "release_ready": false,
   "files": [
     {
+      "path": "LICENSE",
+      "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1",
+      "bytes": 11357
+    },
+    {
       "path": "README.md",
       "sha256": "353cac84b9bae9334f29897ce51017703d3d77b124949b76dedb0c3c42f601a8",
       "bytes": 622
@@ -90,23 +95,23 @@
     },
     {
       "path": "parody-kidz/PK-071B-socmint-sid.png",
-      "sha256": "5c0872dde9566201bce61f8ceeb7790344881d28261a0636a051053ca406e9de",
-      "bytes": 3059730
-    },
-    {
-      "path": "parody-kidz/manifest.json",
-      "sha256": "94e1626d03762e7220861fb35ec5997af5d1658af284f85f146aaddb4e91149e",
-      "bytes": 695
-    },
-    {
-      "path": "quarantine/alternate-parody-card.png",
       "sha256": "e59a4fe4c6f561c2e5059340be394df52ae14946650505d75ca91c191c13f114",
       "bytes": 2654729
     },
     {
+      "path": "parody-kidz/manifest.json",
+      "sha256": "a8a9b2cda39279252d46b2de661af458cec7a9914ac4461416d84f9a47e01a2d",
+      "bytes": 664
+    },
+    {
+      "path": "quarantine/PK-071B-socmint-sid-original.png",
+      "sha256": "5c0872dde9566201bce61f8ceeb7790344881d28261a0636a051053ca406e9de",
+      "bytes": 3059730
+    },
+    {
       "path": "quarantine/manifest.json",
-      "sha256": "44baa6ef129c984b7a173e5097790be18245c04bd2779297ac80fb8383ff8f37",
-      "bytes": 363
+      "sha256": "3f67154472cc547021b217d031d889e1d7de32555320c7d32d394943c9c13549",
+      "bytes": 339
     }
   ]
 }
