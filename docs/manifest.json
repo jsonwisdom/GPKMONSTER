@@ -1,0 +1,13 @@
+{
+  "series": "Reference Documents",
+  "authority": false,
+  "release_ready": false,
+  "provenance_note": "Reconstructed from assets available in the current ChatGPT session on 2026-07-12.",
+  "files": [
+    {
+      "file": "jis_7801208.pdf",
+      "sha256": "5885f47fa24146b861a789733fb2e0cfbff94dda22408857d3d4d8c52b772677",
+      "bytes": 879105
+    }
+  ]
+}

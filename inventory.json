@@ -1,0 +1,112 @@
+{
+  "archive": "GPKMONSTER-canon-archive",
+  "authority": false,
+  "release_ready": false,
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "353cac84b9bae9334f29897ce51017703d3d77b124949b76dedb0c3c42f601a8",
+      "bytes": 622
+    },
+    {
+      "path": "docs/jis_7801208.pdf",
+      "sha256": "5885f47fa24146b861a789733fb2e0cfbff94dda22408857d3d4d8c52b772677",
+      "bytes": 879105
+    },
+    {
+      "path": "docs/manifest.json",
+      "sha256": "af1824149d91820e8df74d36255ba87971e2969bec853349d9cf31ef955d1774",
+      "bytes": 361
+    },
+    {
+      "path": "future-freakout/FF-101B-quantum-quincy.png",
+      "sha256": "536aa9890f0a4f989ed9c4737490c86d8f564692419e186acf2a9676bbb7fa38",
+      "bytes": 3417683
+    },
+    {
+      "path": "future-freakout/FF-102B-neural-nova.png",
+      "sha256": "f2e8f72329704d9e4f0a54b6b22af6c26d72f466f50568d712f27ab34ef912e2",
+      "bytes": 3247092
+    },
+    {
+      "path": "future-freakout/FF-103B-orbit-ollie.png",
+      "sha256": "7d6b27a80fbd5641ff32cfe3233a95c7db5cafe0e7da35d666ce73d3e873374a",
+      "bytes": 3314684
+    },
+    {
+      "path": "future-freakout/manifest.json",
+      "sha256": "247bab3b532a71d2f1d3b3a4d23cd41d9bc16081274a941628a03331adb9b295",
+      "bytes": 691
+    },
+    {
+      "path": "greek-dualism/GD-001-damon-vs-daemon.png",
+      "sha256": "b661958d83833ad048ee6739d9bbf659a404e2196ecf20f4237064814ef772c4",
+      "bytes": 267922
+    },
+    {
+      "path": "greek-dualism/GD-002-apollo-vs-dionysus.png",
+      "sha256": "a6e04d1f732b9fe7966e295254ae7d031dc86178461a116c4e06de30b9e6c9fa",
+      "bytes": 290640
+    },
+    {
+      "path": "greek-dualism/GD-003-logos-vs-mythos.png",
+      "sha256": "63d72c5baf4d183b12f4da28ab830a2c22bfdee99a65971fd8872ac1c9115a6b",
+      "bytes": 270381
+    },
+    {
+      "path": "greek-dualism/GD-004-eros-vs-thanatos.png",
+      "sha256": "c3000d5c726c7056f96eba084b3297e996e9327c2e29a3bf54d611d6037b6ff9",
+      "bytes": 245309
+    },
+    {
+      "path": "greek-dualism/greek-dualism-composite-variant-a.jpeg",
+      "sha256": "a6ce78a7674f4b2c5be0cbe22df0bad94d867635b9ce88c181bfe0f572a52d00",
+      "bytes": 581109
+    },
+    {
+      "path": "greek-dualism/greek-dualism-composite-variant-b.png",
+      "sha256": "9cb0b9072b3d120ab5fd0f4dc64c1120b92eaa94f2c6c5febc9d94dfedbcce26",
+      "bytes": 3496637
+    },
+    {
+      "path": "greek-dualism/greek-dualism-composite-variant-c.png",
+      "sha256": "c404d137f7c2d905c271090b5261bde0c802633f4b9231d6eb5eabcedcbf49ec",
+      "bytes": 3635231
+    },
+    {
+      "path": "greek-dualism/manifest.json",
+      "sha256": "7718b485d5c37e7095a5156b1428959ac5435237f5291fab36412834402fb72d",
+      "bytes": 1384
+    },
+    {
+      "path": "parody-kidz/PK-069B-mind-bend-melvin.png",
+      "sha256": "2f1130561b67e777f85f678dd6b1984a7079e858b616106f8b15e4f9cb2ea436",
+      "bytes": 3028021
+    },
+    {
+      "path": "parody-kidz/PK-070B-phenotype-phyllis.png",
+      "sha256": "22b7a957bfe9aafd7d7ec9eb7e6c2a8c872d4f4f50a59a8c134191fffda59fa5",
+      "bytes": 3099138
+    },
+    {
+      "path": "parody-kidz/PK-071B-socmint-sid.png",
+      "sha256": "5c0872dde9566201bce61f8ceeb7790344881d28261a0636a051053ca406e9de",
+      "bytes": 3059730
+    },
+    {
+      "path": "parody-kidz/manifest.json",
+      "sha256": "94e1626d03762e7220861fb35ec5997af5d1658af284f85f146aaddb4e91149e",
+      "bytes": 695
+    },
+    {
+      "path": "quarantine/alternate-parody-card.png",
+      "sha256": "e59a4fe4c6f561c2e5059340be394df52ae14946650505d75ca91c191c13f114",
+      "bytes": 2654729
+    },
+    {
+      "path": "quarantine/manifest.json",
+      "sha256": "44baa6ef129c984b7a173e5097790be18245c04bd2779297ac80fb8383ff8f37",
+      "bytes": 363
+    }
+  ]
+}

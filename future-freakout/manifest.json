@@ -1,0 +1,23 @@
+{
+  "series": "Future Freakout",
+  "authority": false,
+  "release_ready": false,
+  "provenance_note": "Reconstructed from assets available in the current ChatGPT session on 2026-07-12.",
+  "files": [
+    {
+      "file": "FF-101B-quantum-quincy.png",
+      "sha256": "536aa9890f0a4f989ed9c4737490c86d8f564692419e186acf2a9676bbb7fa38",
+      "bytes": 3417683
+    },
+    {
+      "file": "FF-102B-neural-nova.png",
+      "sha256": "f2e8f72329704d9e4f0a54b6b22af6c26d72f466f50568d712f27ab34ef912e2",
+      "bytes": 3247092
+    },
+    {
+      "file": "FF-103B-orbit-ollie.png",
+      "sha256": "7d6b27a80fbd5641ff32cfe3233a95c7db5cafe0e7da35d666ce73d3e873374a",
+      "bytes": 3314684
+    }
+  ]
+}

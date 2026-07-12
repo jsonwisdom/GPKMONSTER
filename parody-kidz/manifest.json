@@ -1,0 +1,23 @@
+{
+  "series": "Parody Kidz",
+  "authority": false,
+  "release_ready": false,
+  "provenance_note": "Reconstructed from assets available in the current ChatGPT session on 2026-07-12.",
+  "files": [
+    {
+      "file": "PK-069B-mind-bend-melvin.png",
+      "sha256": "2f1130561b67e777f85f678dd6b1984a7079e858b616106f8b15e4f9cb2ea436",
+      "bytes": 3028021
+    },
+    {
+      "file": "PK-070B-phenotype-phyllis.png",
+      "sha256": "22b7a957bfe9aafd7d7ec9eb7e6c2a8c872d4f4f50a59a8c134191fffda59fa5",
+      "bytes": 3099138
+    },
+    {
+      "file": "PK-071B-socmint-sid.png",
+      "sha256": "5c0872dde9566201bce61f8ceeb7790344881d28261a0636a051053ca406e9de",
+      "bytes": 3059730
+    }
+  ]
+}

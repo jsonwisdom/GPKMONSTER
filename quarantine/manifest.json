@@ -1,0 +1,13 @@
+{
+  "series": "Quarantine",
+  "authority": false,
+  "release_ready": false,
+  "provenance_note": "Reconstructed from assets available in the current ChatGPT session on 2026-07-12.",
+  "files": [
+    {
+      "file": "alternate-parody-card.png",
+      "sha256": "e59a4fe4c6f561c2e5059340be394df52ae14946650505d75ca91c191c13f114",
+      "bytes": 2654729
+    }
+  ]
+}

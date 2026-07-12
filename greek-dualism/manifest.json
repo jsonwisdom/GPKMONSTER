@@ -1,0 +1,43 @@
+{
+  "series": "Greek Dualism",
+  "authority": false,
+  "release_ready": false,
+  "provenance_note": "Reconstructed from assets available in the current ChatGPT session on 2026-07-12.",
+  "files": [
+    {
+      "file": "GD-001-damon-vs-daemon.png",
+      "sha256": "b661958d83833ad048ee6739d9bbf659a404e2196ecf20f4237064814ef772c4",
+      "bytes": 267922
+    },
+    {
+      "file": "GD-002-apollo-vs-dionysus.png",
+      "sha256": "a6e04d1f732b9fe7966e295254ae7d031dc86178461a116c4e06de30b9e6c9fa",
+      "bytes": 290640
+    },
+    {
+      "file": "GD-003-logos-vs-mythos.png",
+      "sha256": "63d72c5baf4d183b12f4da28ab830a2c22bfdee99a65971fd8872ac1c9115a6b",
+      "bytes": 270381
+    },
+    {
+      "file": "GD-004-eros-vs-thanatos.png",
+      "sha256": "c3000d5c726c7056f96eba084b3297e996e9327c2e29a3bf54d611d6037b6ff9",
+      "bytes": 245309
+    },
+    {
+      "file": "greek-dualism-composite-variant-a.jpeg",
+      "sha256": "a6ce78a7674f4b2c5be0cbe22df0bad94d867635b9ce88c181bfe0f572a52d00",
+      "bytes": 581109
+    },
+    {
+      "file": "greek-dualism-composite-variant-b.png",
+      "sha256": "9cb0b9072b3d120ab5fd0f4dc64c1120b92eaa94f2c6c5febc9d94dfedbcce26",
+      "bytes": 3496637
+    },
+    {
+      "file": "greek-dualism-composite-variant-c.png",
+      "sha256": "c404d137f7c2d905c271090b5261bde0c802633f4b9231d6eb5eabcedcbf49ec",
+      "bytes": 3635231
+    }
+  ]
+}
