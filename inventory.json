@@ -20,8 +20,8 @@
     },
     {
       "path": "docs/manifest.json",
-      "sha256": "af1824149d91820e8df74d36255ba87971e2969bec853349d9cf31ef955d1774",
-      "bytes": 361
+      "sha256": "4430a34af04b079338e6044ebaad2297090f660694b14e3205a86a51ae296625",
+      "bytes": 433
     },
     {
       "path": "future-freakout/FF-101B-quantum-quincy.png",
@@ -40,8 +40,8 @@
     },
     {
       "path": "future-freakout/manifest.json",
-      "sha256": "247bab3b532a71d2f1d3b3a4d23cd41d9bc16081274a941628a03331adb9b295",
-      "bytes": 691
+      "sha256": "d38a3e1bca70e830fac8ecfc8e55445c202c16706e2f9931c67d1523dc3d698e",
+      "bytes": 763
     },
     {
       "path": "greek-dualism/GD-001-damon-vs-daemon.png",
@@ -80,8 +80,8 @@
     },
     {
       "path": "greek-dualism/manifest.json",
-      "sha256": "7718b485d5c37e7095a5156b1428959ac5435237f5291fab36412834402fb72d",
-      "bytes": 1384
+      "sha256": "f9790174fcb76380fdd5f76b5411d6f69a96491c618d76640d7dc6fb1ffd275c",
+      "bytes": 1456
     },
     {
       "path": "parody-kidz/PK-069B-mind-bend-melvin.png",
@@ -100,8 +100,8 @@
     },
     {
       "path": "parody-kidz/manifest.json",
-      "sha256": "a8a9b2cda39279252d46b2de661af458cec7a9914ac4461416d84f9a47e01a2d",
-      "bytes": 664
+      "sha256": "021125a7e9e66a04abb191fa4b305c6bf48eada8586527a7e6c4dbdd842f49d4",
+      "bytes": 736
     },
     {
       "path": "quarantine/PK-071B-socmint-sid-original.png",
@@ -110,8 +110,8 @@
     },
     {
       "path": "quarantine/manifest.json",
-      "sha256": "3f67154472cc547021b217d031d889e1d7de32555320c7d32d394943c9c13549",
-      "bytes": 339
+      "sha256": "3c7246eb31a265053d0e03730e12baf802d257e83b5283949bd2ecd95b3a5abc",
+      "bytes": 411
     }
   ],
   "provenance_note": " Release readiness activated by explicit operator decision on 2026-07-12."
