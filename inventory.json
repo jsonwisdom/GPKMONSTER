@@ -1,7 +1,7 @@
 {
   "archive": "GPKMONSTER-canon-archive",
   "authority": false,
-  "release_ready": false,
+  "release_ready": true,
   "files": [
     {
       "path": "LICENSE",
@@ -113,5 +113,6 @@
       "sha256": "3f67154472cc547021b217d031d889e1d7de32555320c7d32d394943c9c13549",
       "bytes": 339
     }
-  ]
+  ],
+  "provenance_note": " Release readiness activated by explicit operator decision on 2026-07-12."
 }

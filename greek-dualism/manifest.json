@@ -1,8 +1,8 @@
 {
   "series": "Greek Dualism",
   "authority": false,
-  "release_ready": false,
-  "provenance_note": "Reconstructed from assets available in the current ChatGPT session on 2026-07-12.",
+  "release_ready": true,
+  "provenance_note": "Reconstructed from assets available in the current ChatGPT session on 2026-07-12. Release readiness activated by explicit operator decision on 2026-07-12.",
   "files": [
     {
       "file": "GD-001-damon-vs-daemon.png",

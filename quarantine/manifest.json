@@ -1,8 +1,8 @@
 {
   "series": "Quarantine",
   "authority": false,
-  "release_ready": false,
-  "provenance_note": "Canon Sid asset placement corrected on 2026-07-12.",
+  "release_ready": true,
+  "provenance_note": "Canon Sid asset placement corrected on 2026-07-12. Release readiness activated by explicit operator decision on 2026-07-12.",
   "files": [
     {
       "file": "PK-071B-socmint-sid-original.png",
