@@ -9,7 +9,11 @@ describe("Determinism", () => {
     expect(result1.receiptHash).toBe(result2.receiptHash);
     expect(result1.payload.version).toBe(1);
     expect(result1.payload.parentReceiptHash).toBeNull();
-    expect(result1.envelope.createdAt).not.toBe(result2.envelope.createdAt);
+
+    const iso8601MsZ = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
+    expect(result1.envelope.createdAt).toMatch(iso8601MsZ);
+    expect(result2.envelope.createdAt).toMatch(iso8601MsZ);
+    expect((result1.payload as { createdAt?: string }).createdAt).toBeUndefined();
   });
 
   test("all payload numbers are safe integers", async () => {
