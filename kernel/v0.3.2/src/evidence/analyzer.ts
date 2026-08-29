@@ -9,11 +9,28 @@ import {
   toBasisPoints,
 } from "../kernel/types";
 import { CONSTITUTIONAL_CONSTANTS } from "../kernel/constants";
+import { canonicalizeMetadata } from "../canonical/metadata";
+import { compareUtf8Bytes } from "../canonical/utf8";
+
+function sealArtifactForAnalysis(artifact: ArtifactInput): ArtifactInput {
+  return {
+    ...artifact,
+    metadata: canonicalizeMetadata(artifact.metadata),
+  };
+}
+
+function orderedPair(
+  a: ArtifactInput,
+  b: ArtifactInput
+): [ArtifactInput, ArtifactInput] {
+  return compareUtf8Bytes(a.id, b.id) <= 0 ? [a, b] : [b, a];
+}
 
 export function analyzeEvidence(
   artifacts: ArtifactInput[],
   claim: Claim
 ): AnalysisResult {
+  const sealedArtifacts = artifacts.map(sealArtifactForAnalysis);
   const nodes: EvidenceNode[] = [];
   const edges: EvidenceEdge[] = [];
   const artifactConfidence: Record<string, BasisPoints> = {};
@@ -24,7 +41,7 @@ export function analyzeEvidence(
     severityBasisPoints: BasisPoints;
   }> = [];
 
-  for (const artifact of artifacts) {
+  for (const artifact of sealedArtifacts) {
     const confidence = assessArtifact(artifact, claim);
     artifactConfidence[artifact.id] = confidence;
     nodes.push({
@@ -35,22 +52,23 @@ export function analyzeEvidence(
     });
   }
 
-  for (let i = 0; i < artifacts.length; i++) {
-    for (let j = i + 1; j < artifacts.length; j++) {
-      const a = artifacts[i];
-      const b = artifacts[j];
+  for (let i = 0; i < sealedArtifacts.length; i++) {
+    for (let j = i + 1; j < sealedArtifacts.length; j++) {
+      const a = sealedArtifacts[i];
+      const b = sealedArtifacts[j];
       const conflict = detectConflict(a, b);
       if (conflict) {
+        const [first, second] = orderedPair(a, b);
         contradictions.push({
-          artifactA: a.id,
-          artifactB: b.id,
+          artifactA: first.id,
+          artifactB: second.id,
           description: conflict.description,
           severityBasisPoints: conflict.severity,
         });
         edges.push({
-          edgeId: `edge-${a.id}-${b.id}`,
-          sourceId: `node-${a.id}`,
-          targetId: `node-${b.id}`,
+          edgeId: `edge-${first.id}-${second.id}`,
+          sourceId: `node-${first.id}`,
+          targetId: `node-${second.id}`,
           relation: "contradicts",
           strengthBasisPoints: conflict.severity,
         });
