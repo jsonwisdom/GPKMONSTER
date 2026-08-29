@@ -1,0 +1,35 @@
+{
+  "name": "@gpkmonster/kernel",
+  "version": "0.3.2-rc9",
+  "description": "GPKMONSTER Kernel \u2014 Deterministic Evidence Engine",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint": "eslint src/**/*.ts",
+    "coverage": "jest --coverage"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "jest": "^29.5.0",
+    "ts-jest": "^29.1.0",
+    "typescript": "^5.0.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "evidence",
+    "replay",
+    "deterministic",
+    "kernel",
+    "gpkmonster"
+  ],
+  "license": "MIT"
+}
