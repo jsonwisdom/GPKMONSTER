@@ -4,9 +4,10 @@ import { canonicalizeMetadata } from "../../src/canonical/metadata";
 import { Claim, ArtifactInput, VerdictInputs } from "../../src/kernel/types";
 
 /**
- * Binding regressions. RED is the receipt that current kernel
- * does not close these surfaces. Do not edit src/ to make these green
- * in this commit.
+ * Collision mechanics — current constitution.
+ * #2 and #4 are regression locks for repaired law bugs.
+ * #1 #3 #5 #6 state existing law; they do not invent prefixes,
+ * float retention, or guessed-edge contracts.
  */
 
 function baseClaim(): Claim {
@@ -45,12 +46,13 @@ function inputs(arts: ArtifactInput[]): VerdictInputs {
 }
 
 describe("Collision mechanics — metadata drop / off-ledger cause", () => {
-  test("non-integer metadata.amount remains in canonical metadata (MUST FAIL today)", () => {
+  test("#1 NO FLOATS: non-integer metadata.amount is dropped, not sealed", () => {
     const canonical = canonicalizeMetadata({ amount: 14.5, location: "Chicago" });
-    expect(canonical.amount).toBeDefined();
+    expect(canonical.amount).toBeUndefined();
+    expect(canonical.location).toBe("Chicago");
   });
 
-  test("analyzer must not read metadata fields that canonicalizeMetadata drops (MUST FAIL today)", () => {
+  test("#2 analyzer consumes only canonical metadata (regression lock)", () => {
     const rawMeta = { amount: 14.5 };
     const canonical = canonicalizeMetadata(rawMeta);
     const withDropped = analyzeEvidence(
@@ -64,32 +66,35 @@ describe("Collision mechanics — metadata drop / off-ledger cause", () => {
     expect(withDropped.graph.edges).toEqual(withoutDropped.graph.edges);
   });
 
-  test("same raw content + same hashed metadata => same receiptHash (MUST FAIL today)", async () => {
-    const left = await issueVerdict(
+  test("#3 receiptHash binds sealed payload; dropped float is not a second preimage", async () => {
+    const dropped = await issueVerdict(
       inputs([
         artifact("A", "plain memo", { amount: 14.5 }),
         artifact("B", "plain memo two", { amount: 20 }),
       ])
     );
-    const right = await issueVerdict(
+    const omitted = await issueVerdict(
       inputs([
         artifact("A", "plain memo", {}),
         artifact("B", "plain memo two", { amount: 20 }),
       ])
     );
+    const differentSeed = await issueVerdict({
+      ...inputs([
+        artifact("A", "plain memo", {}),
+        artifact("B", "plain memo two", { amount: 20 }),
+      ]),
+      seed: 2,
+    });
 
-    const leftMeta = left.payload.artifacts.find((a) => a.id === "A")?.metadata;
-    const rightMeta = right.payload.artifacts.find((a) => a.id === "A")?.metadata;
-    expect(leftMeta).toEqual(rightMeta);
-    expect(left.payload.artifacts.find((a) => a.id === "A")?.rawContentSha256).toBe(
-      right.payload.artifacts.find((a) => a.id === "A")?.rawContentSha256
-    );
-    expect(left.receiptHash).toBe(right.receiptHash);
+    expect(dropped.payload.artifacts.find((a) => a.id === "A")?.metadata.amount).toBeUndefined();
+    expect(dropped.receiptHash).toBe(omitted.receiptHash);
+    expect(differentSeed.receiptHash).not.toBe(omitted.receiptHash);
   });
 });
 
 describe("Collision mechanics — edge-id encounter order", () => {
-  test("contradict edgeId is stable across input-array order (MUST FAIL today)", async () => {
+  test("#4 contradict edgeId is UTF-8 pair-stable (regression lock)", async () => {
     const a = artifact("A1", "receipt in Chicago", { location: "Chicago" });
     const b = artifact("A2", "GPS 40.7128", { location: "NYC" });
 
@@ -113,34 +118,52 @@ describe("Collision mechanics — edge-id encounter order", () => {
     expect(forwardEdge!.edgeId).toBe("edge-A1-A2");
   });
 
-  test("challenge edge-A1-A2 hits after swapped artifact order (MUST FAIL today)", async () => {
+  test("#5 challenge binds sealed edgeId; guessed non-canonical pair name is rejected", async () => {
     const a = artifact("A1", "receipt in Chicago", { location: "Chicago" });
     const b = artifact("A2", "GPS 40.7128", { location: "NYC" });
-    const swapped = await issueVerdict({
+    const swapped = await issueVerdict(inputs([b, a]));
+    const sealedId = swapped.payload.evidenceGraph.edges[0]?.edgeId;
+    expect(sealedId).toBe("edge-A1-A2");
+
+    const guessed = await issueVerdict({
       ...inputs([b, a]),
       challenge: {
         kind: "device_person_gap",
-        edgeId: "edge-A1-A2",
+        edgeId: "edge-A2-A1",
         artifactId: "A2",
         reasoning: "GPS only proves device location",
         proposedAlternative: "Device could be elsewhere",
       },
     });
+    expect(guessed.payload.verdict.reasoningSummary.includes("challenge rejected")).toBe(true);
 
-    expect(swapped.payload.verdict.reasoningSummary.includes("challenge rejected")).toBe(false);
-    const hit = swapped.payload.reasoning.find((step) => step.edgeId === "edge-A1-A2");
+    const copied = await issueVerdict({
+      ...inputs([b, a]),
+      challenge: {
+        kind: "device_person_gap",
+        edgeId: sealedId!,
+        artifactId: "A2",
+        reasoning: "GPS only proves device location",
+        proposedAlternative: "Device could be elsewhere",
+      },
+    });
+    expect(copied.payload.verdict.reasoningSummary.includes("challenge rejected")).toBe(false);
+    const hit = copied.payload.reasoning.find((step) => step.edgeId === sealedId);
     expect(hit?.challenged).toBe(true);
   });
 });
 
-describe("Collision mechanics — domain prefix absence", () => {
-  test("receiptHash is domain-separated from artifact hashes (MUST FAIL today)", async () => {
+describe("Collision mechanics — hash alphabet", () => {
+  test("#6 current law is bare 64-hex; prefixes are not required", async () => {
     const sealed = await issueVerdict(
       inputs([artifact("A", "hello domain probe")])
     );
     const raw = sealed.payload.artifacts[0].rawContentSha256;
-    expect(sealed.receiptHash.startsWith("receipt:")).toBe(true);
-    expect(raw.startsWith("artifact:")).toBe(true);
+    expect(sealed.receiptHash).toMatch(/^[0-9a-f]{64}$/);
+    expect(raw).toMatch(/^[0-9a-f]{64}$/);
+    expect(sealed.receiptHash.startsWith("receipt:")).toBe(false);
+    expect(raw.startsWith("artifact:")).toBe(false);
+    expect((sealed.payload as { receiptHash?: string }).receiptHash).toBeUndefined();
     expect(sealed.receiptHash).not.toEqual(raw);
   });
 });
