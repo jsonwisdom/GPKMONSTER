@@ -1,0 +1,13 @@
+{
+  "format": "GPKMONSTER_FIVE_ZIP_V1",
+  "fixed_timestamp": "1980-01-01T00:00:00Z",
+  "compression": "deflate-9",
+  "allow_zip64": false,
+  "packages": [
+    {"id":"01_ZORA_CATALOG","file":"GPKMONSTER_01_ZORA_CATALOG_V1.zip","sources":{"zora":["data/**/*.json","exports/**/*","docs/receipts/JAY_ZORA_FULL_AUDIT_RUN1_2026-09-02/JAY_ZORA_MASTER_CATALOG.*"]}},
+    {"id":"02_ZORA_MEDIA","file":"GPKMONSTER_02_ZORA_MEDIA_V1.zip","sources":{"drive":["**/*.png","**/*.jpg","**/*.jpeg","**/*.gif","**/*.webp","**/*.mp4"]}},
+    {"id":"03_RECEIPTS","file":"GPKMONSTER_03_RECEIPTS_V1.zip","sources":{"zora":["docs/receipts/**/*","receipts/**/*"],"drive":["**/*RECEIPT*","**/SHA256SUMS*","**/*TIMELINE*","**/*SERIES_MAP*"]}},
+    {"id":"04_KAREN11","file":"GPKMONSTER_04_KAREN11_V1.zip","sources":{"gpk":["docs/receipts/KAREN11*","docs/specs/**/*","receipts/**/*"],"drive":["**/*KAREN11*"]}},
+    {"id":"05_POWERSHELL_HANDOFF","file":"GPKMONSTER_05_POWERSHELL_HANDOFF_V1.zip","sources":{"gpk":["config/**/*","powershell/**/*","tools/**/*","docs/specs/**/*"]}}
+  ]
+}
