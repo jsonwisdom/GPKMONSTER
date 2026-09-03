@@ -1,0 +1,63 @@
+{
+  "event": "KAREN11_8A_HISTORICAL_STYLE_LOCK_SYNCED",
+  "date": "2026-09-03",
+  "series": "KAREN11",
+  "card": "8a SPLASH ALICIA",
+  "classification": "SATIRE_LABELED_PROMPT_SPEC_ONLY",
+  "historical_style_map": {
+    "POUND": "TOY + SPRAY + ONE_VERB",
+    "BUNK": "INK + MANIA + SOUL_IN_LINE",
+    "WARHOLA": "OIL + PLACE + WEATHER",
+    "ELDER_FAT": "OPTIONAL_SUB_JOKES"
+  },
+  "front_lock": {
+    "style_column": "POUND_ONLY",
+    "primary_read": "COFFEE_SPLASH_ONLY",
+    "fat_dose": "ZERO",
+    "center_must_hold": true,
+    "passive_props": "NON_COMEDIC_SUPPORT_ONLY",
+    "wristband": "INERT_COSTUME_MARKER",
+    "corn_dog": "INERT_COSTUME_MARKER_OR_CUT",
+    "corn_dog_in_ifb": "PROHIBITED",
+    "desk_chyron_mug": "SPLASH_SUPPORT_ONLY",
+    "prompt_text": "UNCHANGED",
+    "supersession": "The historical prompt phrase 'one corn-dog stuck in the IFB cord' is operationally superseded by CORN_DOG_IN_IFB=PROHIBITED."
+  },
+  "thumb_test": {
+    "ONE_LAUGH": "PASS",
+    "MULTI_LAUGH": "FAIL_AND_HOLD"
+  },
+  "do_not_merge_into_8a": [
+    "CROW_QUILL_INTERIOR_HATCH",
+    "CHICKEN_FAT_EXTRAS",
+    "SECONDARY_SMEARS",
+    "CROSS_EYED_EFFORT_FACE",
+    "STAINED_ENVIRONMENT",
+    "OIL_BLEND_SKIN",
+    "PAINTED_NEWSROOM_INTERIOR",
+    "CINEMATIC_OR_OVERCAST_LIGHT",
+    "SPOOKY_OR_MOODY_GRADE",
+    "ADULT_ILLUSTRATION_FACE",
+    "EXTRA_ENVIRONMENTAL_STORY"
+  ],
+  "later_surfaces": {
+    "certificate_back": "FAT_LEGAL_NOT_AUTHORIZED",
+    "wrapper": "FAT_LEGAL_NOT_AUTHORIZED",
+    "puzzle_mural": "FULL_FAT_CONCEPT_ONLY",
+    "8b": "HOLD_IDENTICAL_PIXELS_LATER"
+  },
+  "status": {
+    "POUND_STYLE_MAPPED": true,
+    "BUNK_INK_MAPPED": true,
+    "WARHOLA_WEATHER_MAPPED": true,
+    "ELDER_FAT_MAPPED": true,
+    "8A_FRONT": "POUND_LOCK_NO_FAT",
+    "RENDER": "HOLD",
+    "VISUAL_REVIEW": "NOT_RUN",
+    "8B": "HOLD",
+    "PUBLISH": false,
+    "MINT": false,
+    "MERGE": false,
+    "AUTHORITY_CREATED": false
+  }
+}
