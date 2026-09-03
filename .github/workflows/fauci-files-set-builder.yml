@@ -1,0 +1,176 @@
+name: Fauci Files Card Set Builder
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish_shopify:
+        description: "After machine + protected-human gates, allow Shopify output"
+        required: true
+        type: boolean
+        default: false
+  push:
+    branches: [build/fauci-files-card-set-v1]
+    paths:
+      - "sets/fauci-files/**"
+      - "tools/build_fauci_cards.py"
+      - ".github/workflows/fauci-files-set-builder.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fauci-files-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  machine-render:
+    name: AL render + deterministic replay
+    runs-on: ubuntu-latest
+    outputs:
+      manifest_sha: ${{ steps.digest.outputs.manifest_sha }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Render pass one
+        run: python tools/build_fauci_cards.py
+      - name: Freeze pass one
+        run: cp -R rendered/fauci-files /tmp/fauci-pass-one
+      - name: Render pass two
+        run: |
+          rm -rf rendered/fauci-files
+          python tools/build_fauci_cards.py
+          diff -ru /tmp/fauci-pass-one rendered/fauci-files
+      - id: digest
+        name: Record manifest digest
+        run: echo "manifest_sha=$(sha256sum rendered/fauci-files/manifest.json | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fauci-files-rendered-images
+          path: rendered/fauci-files/
+          if-no-files-found: error
+
+  machine-law:
+    name: ALMS evidence boundary
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate machine input contract
+        shell: python
+        run: |
+          import json, pathlib
+          d=json.loads(pathlib.Path("sets/fauci-files/set.json").read_text())
+          assert d["identity_anchor"] == "jaywisdom.base.eth"
+          assert d["authority_created"] is False
+          assert d["legal_equivalence"] == "DISPUTED"
+          assert len(d["cards"]) == 6
+          joined=" ".join(d["invariants"])
+          for required in ("hash_match_is_not_trigger","letter_is_not_DOJ_action","civil_is_not_criminal"):
+              assert required in joined
+          assert next(c for c in d["cards"] if c["id"]=="FF-001")["state"]=="PASS_LETTERS_INVENTORY_ONLY"
+          assert next(c for c in d["cards"] if c["id"]=="FF-004")["state"]=="HOLD"
+
+  machine-shopify-input:
+    name: Machine input → Shopify draft payload
+    runs-on: ubuntu-latest
+    needs: [machine-render, machine-law]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: fauci-files-rendered-images
+          path: rendered/fauci-files
+      - name: Build Shopify handoff
+        shell: python
+        env:
+          MANIFEST_SHA: ${{ needs.machine-render.outputs.manifest_sha }}
+        run: |
+          import json, os, pathlib
+          spec=json.loads(pathlib.Path("sets/fauci-files/set.json").read_text())
+          payload={
+            "mode":"DRAFT_HANDOFF",
+            "mission_owner":"Jason Wisdom",
+            "identity_anchor":"jaywisdom.base.eth",
+            "machine_gate":"PASS",
+            "human_gate":"PENDING",
+            "shopify_publish":"BLOCKED_PENDING_HUMAN",
+            "render_manifest_sha256":os.environ["MANIFEST_SHA"],
+            "products":[{
+              "handle":"publicproof-"+c["id"].lower(),
+              "title":c["name"],
+              "status":"DRAFT",
+              "description":c["caption"],
+              "tags":["PublicProof","Fauci Files",c["lane"],c["state"]],
+              "image_artifact":"rendered/fauci-files/"+c["id"]+".svg"
+            } for c in spec["cards"]]
+          }
+          pathlib.Path("shopify").mkdir()
+          pathlib.Path("shopify/FAUCI_FILES_SHOPIFY_HANDOFF.json").write_text(json.dumps(payload,indent=2)+"\n")
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fauci-files-shopify-draft-handoff
+          path: shopify/FAUCI_FILES_SHOPIFY_HANDOFF.json
+          if-no-files-found: error
+
+  human-judgment:
+    name: Protected human judgment
+    runs-on: ubuntu-latest
+    needs: [machine-render, machine-law, machine-shopify-input]
+    environment: gpk-human-judgment
+    steps:
+      - name: Fail closed unless gate is configured
+        env:
+          HUMAN_GATE_CONFIGURED: ${{ secrets.HUMAN_GATE_CONFIGURED }}
+        run: |
+          test "$HUMAN_GATE_CONFIGURED" = "true"
+      - name: Emit post-gate observation receipt
+        shell: python
+        env:
+          MANIFEST_SHA: ${{ needs.machine-render.outputs.manifest_sha }}
+          RUN_ID: ${{ github.run_id }}
+          HEAD_SHA: ${{ github.sha }}
+          TRIGGER_ACTOR: ${{ github.triggering_actor }}
+        run: |
+          import json, os, pathlib
+          receipt={
+            "type":"POST_ENVIRONMENT_GATE_OBSERVATION",
+            "environment":"gpk-human-judgment",
+            "workflow_run_id":os.environ["RUN_ID"],
+            "head_sha":os.environ["HEAD_SHA"],
+            "render_manifest_sha256":os.environ["MANIFEST_SHA"],
+            "workflow_trigger_actor":os.environ["TRIGGER_ACTOR"],
+            "reviewer_identity":"SEE_GITHUB_DEPLOYMENT_REVIEW_LOG",
+            "scope":"creative_and_publication_only",
+            "legal_authority_created":False
+          }
+          pathlib.Path("human-gate").mkdir()
+          pathlib.Path("human-gate/receipt.json").write_text(json.dumps(receipt,indent=2)+"\n")
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fauci-files-human-gate-observation
+          path: human-gate/receipt.json
+          if-no-files-found: error
+
+  shopify-output:
+    name: Shopify output gate
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish_shopify }}
+    runs-on: ubuntu-latest
+    needs: [human-judgment, machine-shopify-input]
+    environment: shopify-production
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: fauci-files-shopify-draft-handoff
+          path: shopify
+      - name: Fail closed unless Shopify gate is configured
+        env:
+          SHOPIFY_GATE_CONFIGURED: ${{ secrets.SHOPIFY_GATE_CONFIGURED }}
+          SHOPIFY_STORE_DOMAIN: ${{ secrets.SHOPIFY_STORE_DOMAIN }}
+          SHOPIFY_ADMIN_TOKEN: ${{ secrets.SHOPIFY_ADMIN_TOKEN }}
+        run: |
+          test "$SHOPIFY_GATE_CONFIGURED" = "true"
+          test -n "$SHOPIFY_STORE_DOMAIN"
+          test -n "$SHOPIFY_ADMIN_TOKEN"
+          echo "Gate and credentials observed; live Admin publication adapter remains unimplemented."
+      - uses: actions/upload-artifact@v4
+        with:
+          name: approved-shopify-output
+          path: shopify/FAUCI_FILES_SHOPIFY_HANDOFF.json
