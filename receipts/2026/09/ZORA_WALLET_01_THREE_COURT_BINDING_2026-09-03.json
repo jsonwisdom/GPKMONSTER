@@ -1,0 +1,46 @@
+{
+  "schema": "GPKMONSTER_ZORA_THREE_COURT_BINDING_RECEIPT_V0_1",
+  "date": "2026-09-03",
+  "wallet_id": "JAY_ZORA_WALLET_01",
+  "profile_handle": "jaywisdom",
+  "creator_address": "0x829adfedbe565f9885a7ea6bc78912acaef055e2",
+  "source": {
+    "repository": "jsonwisdom/jay-zora-portal",
+    "ref": "live-zora-ingestion",
+    "observed_branch_head": "2872714cd7d0f3460b106ba5d37b24a9cd2c85d6",
+    "path": "data/live_zora_items.json",
+    "git_blob_sha": "905d9a0448cec672e11d7fc2aa382450a8d8717a",
+    "sha256": "89ea69d495b2a4bd53e24c41d4fa03bfd0abe085703abf1656f83d8f15e5cc8d",
+    "manifest_path": "exports/jay_zora_inventory.manifest.json"
+  },
+  "counts": {
+    "declared_profile_count": 1087,
+    "enumerable_inventory_count": 1015,
+    "unique_contract_count": 1015,
+    "declared_enumerable_gap": 72,
+    "terminal_has_next_page": false
+  },
+  "three_courts": {
+    "meme_court": "SOURCE_BOUND",
+    "goblin_court": "SOURCE_BOUND",
+    "clown_court": "SOURCE_BOUND",
+    "query_adapter": "tools/query_three_courts.py",
+    "query_adapter_source_present": true,
+    "query_adapter_in_repo_test": "HOLD"
+  },
+  "wallet_registry": {
+    "expected_slots": 8,
+    "resolved_slots": 1,
+    "unresolved_slots": 7
+  },
+  "state": {
+    "source_binding": "PASS",
+    "enumerable_corpus": "1015_ROWS",
+    "declared_profile_ceiling": "1087",
+    "gap": "72_VISIBLE",
+    "base_eas": "NOT_CLAIMED",
+    "wallet_control": "NOT_INFERRED",
+    "real_world_authority": false
+  },
+  "law": "NO_INHERITED_GREEN"
+}
