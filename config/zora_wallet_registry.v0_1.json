@@ -1,0 +1,41 @@
+{
+  "schema": "GPKMONSTER_ZORA_WALLET_REGISTRY_V0_1",
+  "operator": "Jay Wisdom",
+  "identity": "jaywisdom.eth",
+  "expected_wallet_slots": 8,
+  "resolved_wallet_slots": 1,
+  "unresolved_wallet_slots": 7,
+  "wallets": [
+    {
+      "wallet_id": "JAY_ZORA_WALLET_01",
+      "address": "0x829adfedbe565f9885a7ea6bc78912acaef055e2",
+      "network": "base",
+      "source_repository": "jsonwisdom/jay-zora-portal",
+      "source_ref": "live-zora-ingestion",
+      "source_path": "data/live_zora_items.json",
+      "source_git_blob_sha": "905d9a0448cec672e11d7fc2aa382450a8d8717a",
+      "source_sha256": "89ea69d495b2a4bd53e24c41d4fa03bfd0abe085703abf1656f83d8f15e5cc8d",
+      "declared_profile_count": 1087,
+      "enumerable_inventory_count": 1015,
+      "unique_contract_count": 1015,
+      "declared_enumerable_gap": 72,
+      "state": "PROFILE_SOURCE_BOUND",
+      "wallet_control_claim": "NOT_INFERRED_FROM_PROFILE_DATA"
+    },
+    {"wallet_id":"JAY_ZORA_WALLET_02","address":null,"state":"HOLD_UNRESOLVED"},
+    {"wallet_id":"JAY_ZORA_WALLET_03","address":null,"state":"HOLD_UNRESOLVED"},
+    {"wallet_id":"JAY_ZORA_WALLET_04","address":null,"state":"HOLD_UNRESOLVED"},
+    {"wallet_id":"JAY_ZORA_WALLET_05","address":null,"state":"HOLD_UNRESOLVED"},
+    {"wallet_id":"JAY_ZORA_WALLET_06","address":null,"state":"HOLD_UNRESOLVED"},
+    {"wallet_id":"JAY_ZORA_WALLET_07","address":null,"state":"HOLD_UNRESOLVED"},
+    {"wallet_id":"JAY_ZORA_WALLET_08","address":null,"state":"HOLD_UNRESOLVED"}
+  ],
+  "law": [
+    "PROFILE_ASSOCIATION != WALLET_CONTROL",
+    "DECLARED_COUNT != ENUMERABLE_COUNT",
+    "SOURCE_BINDING != ONCHAIN_SETTLEMENT",
+    "NO_INHERITED_GREEN"
+  ],
+  "base_eas_witness": "NOT_CLAIMED",
+  "real_world_authority": false
+}
