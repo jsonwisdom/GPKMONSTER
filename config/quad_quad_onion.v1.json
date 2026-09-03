@@ -1,0 +1,51 @@
+{
+  "format": "GPKMONSTER_QUAD_QUAD_ONION_V1",
+  "audit_root": "GPKMONSTER",
+  "edge_count": 16,
+  "external_website_dependency": false,
+  "authority_created": false,
+  "invariants": [
+    "PASS(edge_n)!=PASS(edge_n+1)",
+    "OBSERVED!=VERIFIED",
+    "IDENTITY!=AUTHORITY",
+    "SOURCE!=BUILD",
+    "BUILD!=PACKAGE",
+    "PACKAGE!=RECEIPT",
+    "RECEIPT!=PROMOTION",
+    "PROMOTION!=AUTHORITY"
+  ],
+  "onions": {
+    "SOURCE_INTEGRITY": [
+      "repository_path_exists",
+      "explicit_branch_or_ref",
+      "explicit_commit_sha",
+      "reproducible_source_hash"
+    ],
+    "EXECUTION_INTEGRITY": [
+      "explicit_operator_command",
+      "explicit_runtime_environment",
+      "deterministic_replay",
+      "stable_repeated_output_hash"
+    ],
+    "ARTIFACT_INTEGRITY": [
+      "output_package_exists",
+      "output_package_nonempty",
+      "zip64_fail_closed",
+      "manifest_binds_files_and_hashes"
+    ],
+    "CONTINUITY_RECEIPT_INTEGRITY": [
+      "independent_continuity_observation",
+      "receipt_binds_source_execution_artifact",
+      "reverse_replay_same_justified_state",
+      "no_implicit_authority_or_promotion"
+    ]
+  },
+  "out_of_scope": [
+    "websites",
+    "storefronts",
+    "hosted_identity_providers",
+    "social_platforms",
+    "registrars",
+    "external_corporate_authentication"
+  ]
+}
