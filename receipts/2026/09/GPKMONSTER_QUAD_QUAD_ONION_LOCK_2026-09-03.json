@@ -1,0 +1,17 @@
+{
+  "receipt": "GPKMONSTER_QUAD_QUAD_ONION_LOCK_2026-09-03",
+  "repo": "jsonwisdom/GPKMONSTER",
+  "branch": "build/gpt-monster-five-zip-v1",
+  "spec": "docs/specs/GPKMONSTER_QUAD_QUAD_ONION_AUDIT_V1.md",
+  "config": "config/quad_quad_onion.v1.json",
+  "model": "QUAD_X_QUAD_ONION",
+  "primary_edges": 16,
+  "external_website_dependency": false,
+  "website_state": "OUT_OF_SCOPE",
+  "external_account_state": "OUT_OF_SCOPE",
+  "merge": false,
+  "publish": false,
+  "mint": false,
+  "authority_created": false,
+  "status": "REPO_NATIVE_AUDIT_LOCKED"
+}
