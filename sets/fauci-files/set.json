@@ -1,0 +1,25 @@
+{
+  "set_id": "FAUCI_FILES_V1",
+  "mission_owner": "Jason Wisdom",
+  "identity_anchor": "jaywisdom.base.eth",
+  "title": "PublicProof Fauci Files",
+  "parody_notice": "Original satirical evidence cards; unaffiliated with any commercial trading-card brand.",
+  "authority_created": false,
+  "legal_equivalence": "DISPUTED",
+  "cards": [
+    {"id":"FF-001","name":"LETTER LANE","lane":"DIRECT_REFERRAL","state":"PASS_LETTERS_INVENTORY_ONLY","caption":"A letter records a request. It is not DOJ action."},
+    {"id":"FF-002","name":"BLANK RESOLUTION","lane":"STATUTORY_CERTIFICATION","state":"HOLD","caption":"Unnumbered S. Res. ____ is not full-Senate action or certification."},
+    {"id":"FF-003","name":"HASH MATCH","lane":"PROCESS","state":"PASS_PROCESS_ONLY","caption":"Matching bytes prove replay continuity, not a legal trigger."},
+    {"id":"FF-004","name":"CERTIFICATION HOLD","lane":"STATUTORY_CERTIFICATION","state":"HOLD","caption":"Congress.gov number and 2 U.S.C. §194 certification remain unobserved."},
+    {"id":"FF-005","name":"COURT SPLIT","lane":"COURT","state":"HOLD","caption":"Civil filing is not a criminal charge. Related dockets remain separately classified."},
+    {"id":"FF-006","name":"JASON'S MISSION","lane":"CONTROL","state":"CONTINUES","caption":"Verification over narrative. No new qualifying event."}
+  ],
+  "invariants": [
+    "rendered_image_is_render_proof_only",
+    "hash_match_is_not_trigger",
+    "letter_is_not_DOJ_action",
+    "committee_action_is_not_full_Senate_action",
+    "civil_is_not_criminal",
+    "fixture_DISPUTED_is_not_Peters_letter"
+  ]
+}
