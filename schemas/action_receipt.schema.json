@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "gpkmonster.action_receipt.v0_1",
+  "title": "ActionReceipt",
+  "type": "object",
+  "required": ["intent_sha256", "human_approved", "state"],
+  "properties": {
+    "intent_sha256": {"type": "string", "minLength": 64, "maxLength": 64},
+    "human_approved": {"type": "boolean"},
+    "state": {"enum": ["DRAFT", "AUTHORIZED", "EXECUTED", "PUBLISHED", "VERIFIED", "HOLD"]},
+    "authority": {"const": false}
+  }
+}

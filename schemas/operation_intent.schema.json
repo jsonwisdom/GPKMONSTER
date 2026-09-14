@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "gpkmonster.operation_intent.v0_1",
+  "title": "OperationIntent",
+  "type": "object",
+  "required": ["asset_id", "purpose_id", "policy_id", "identity"],
+  "properties": {
+    "asset_id": {"type": "string"},
+    "purpose_id": {"type": "string"},
+    "policy_id": {"type": "string"},
+    "identity": {"type": "string"},
+    "settle_name": {"const": "jaywisdom.base.eth"}
+  }
+}

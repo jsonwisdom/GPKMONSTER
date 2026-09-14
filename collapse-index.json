@@ -1,0 +1,37 @@
+{
+  "packet": "GPKMONSTER_SETTLEMENT_V0_1",
+  "authority": false,
+  "no_fake_green": true,
+  "state": "COLLAPSE_PACKED",
+  "market_settled": false,
+  "event_x": "UNWITNESSED",
+  "settle": {
+    "name": "jaywisdom.base.eth",
+    "address": "0xA380552a27b0a5a2874Ea7AA52CAC09f542002E8",
+    "ens": "jaywisdom.eth"
+  },
+  "origin": {
+    "repo": "jsonwisdom/GPKMONSTER",
+    "created": "2016-09-29",
+    "pre_rebuild_tree": ["LICENSE", "README.md"],
+    "description": "A Business idea that worked for just a little while"
+  },
+  "pointers": [
+    {"id": "GPK_HUSK", "url": "https://github.com/jsonwisdom/GPKMONSTER"},
+    {"id": "GRAPH_SLOT", "url": "https://github.com/jsonwisdom/COMPUTERWISDOM/blob/master/docs/master_jsonwisdom_repo_graph_v1.md"},
+    {"id": "ISSUE_2_LEDGER_MVP", "url": "https://github.com/jsonwisdom/GPKMONSTER/issues/2"},
+    {"id": "JOY_RCB_00001", "sha256": "0901a84bdfa3eaa094004c5df12d9703e0dfea3f35fdf41af7301c00fe940e8b", "bytes": 3746795, "path": "artifacts/goblin_constellation_paths_v0_1.json", "note": "MATCH at JOY HEAD 017564d4; D1 open"},
+    {"id": "JOY_RCB_00002", "sha256": "3d8cf0121713ca8b69ee56f3436b0b6b9e4722acfc11742f6f330404ad493521", "bytes": 829614, "path": "artifacts/goblin_constellation_v0_1.json", "note": "MATCH at JOY HEAD 017564d4; D1 open"},
+    {"id": "ZORA_PROFILE", "url": "https://zora.co/@jaywisdom"},
+    {"id": "ZORA_COIN_PORTAL", "address": "0x5e35e630356a1b24d1b45078918ea60ef98e915a"},
+    {"id": "ZORA_MINT_THE_SYSTEM", "url": "https://zora.co/coin/base:0x532f64503382d8f9d5ef49e7963ee177cbad96dd"},
+    {"id": "UNISWAP_V4_BASE_POOL_GECKO", "pool": "0xf2d2a3cf179c5bdc3ff2ea9a5f6bac9fdab47057aeb5f54c2582a57312c73e2c", "pair": "jaywisdom/ZORA", "note": "observed locator; 24h vol N/A this pass"},
+    {"id": "JAYSPACE", "url": "https://jsonwisdom.github.io/jay-zora-portal/"}
+  ],
+  "rules": [
+    "POOL_SEEN != SETTLED",
+    "PUBLISH_READY != PUBLISHED",
+    "HASH != TRUTH",
+    "GPKMONSTER != CANON"
+  ]
+}
