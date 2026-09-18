@@ -1,0 +1,125 @@
+{
+  "artifact": "gpkmonster-kernel-v0.3.2-rc9",
+  "materialized_from": "RC8 artifact plus observed metadata-consistency correction: package version and KERNEL_VERSION both identify RC9",
+  "file_count": 22,
+  "build_verification": {
+    "tsc_exit_code": null,
+    "compiler": null
+  },
+  "test_verification": {
+    "jest_exit_code": null,
+    "status": "NOT_RUN"
+  },
+  "files": [
+    {
+      "path": "LICENSE",
+      "bytes": 1067,
+      "sha256": "8a920f8062d4db2b342247732082c16c7b4ef7fa92e258560b8cc14d59617c32"
+    },
+    {
+      "path": "README.md",
+      "bytes": 710,
+      "sha256": "befa7c02e8db77230026936a7afadda16d3e908c19f9892892f64f4faf86c15f"
+    },
+    {
+      "path": "jest.config.js",
+      "bytes": 228,
+      "sha256": "20e0a698aba6fc16a1b4bca4d6427cf5d350a6fa7c3d35aef21734ad13b460cc"
+    },
+    {
+      "path": "package.json",
+      "bytes": 788,
+      "sha256": "ddcdb371d18176c14a1643a2ac8a14ba7efe80f84ac8ee38d3baf2b114771f93"
+    },
+    {
+      "path": "src/canonical/freeze.ts",
+      "bytes": 282,
+      "sha256": "d3b39c6996d8abb671e78abbf3faf0d280659bbcae08873f46df2bb2e60621f7"
+    },
+    {
+      "path": "src/canonical/index.ts",
+      "bytes": 3470,
+      "sha256": "97017aa128881f09f25f40c8832f2ad1a81b89c8c933f9c712bc0e2dd2a57703"
+    },
+    {
+      "path": "src/canonical/metadata.ts",
+      "bytes": 774,
+      "sha256": "aa335a1b7b4320aa15874b005e1fac11139685b5eebc1540a7f2922ae04f8114"
+    },
+    {
+      "path": "src/canonical/utf8.ts",
+      "bytes": 633,
+      "sha256": "5446ee99f37c2d85ec1e7359f13c3abb7ed06a177e46919f3af73b99d6023bb3"
+    },
+    {
+      "path": "src/crypto/sha256.ts",
+      "bytes": 1000,
+      "sha256": "a3296fe4ca1b0c04831ca025056a3464f1748c7e7653296bfddd11f33a485770"
+    },
+    {
+      "path": "src/evaluator/challenge.ts",
+      "bytes": 5826,
+      "sha256": "2a57beb93b088b4afcb4eee299d6e4c3ea0465a61de6a84c95216d061ba0802d"
+    },
+    {
+      "path": "src/evaluator/derive.ts",
+      "bytes": 2958,
+      "sha256": "96469711df9dbd973501e03a14ffd5ec3165b47855f9bef44c8c2637f39cde48"
+    },
+    {
+      "path": "src/evaluator/index.ts",
+      "bytes": 4663,
+      "sha256": "3126e440b579c5f18acc40b0185a8da6d27bfb1b193097d2f1a16eb5a81de1c6"
+    },
+    {
+      "path": "src/evidence/analyzer.ts",
+      "bytes": 4778,
+      "sha256": "a37215897cd20f79e16e1eab2d30e0a99d771b567795479244121bf8acecb670"
+    },
+    {
+      "path": "src/index.ts",
+      "bytes": 391,
+      "sha256": "dcbaccfcee0b882508ad36c6a84b8d6847d7b9402b949bad710b3e3309478536"
+    },
+    {
+      "path": "src/kernel/constants.ts",
+      "bytes": 444,
+      "sha256": "b52999aff3141bb8ea154b2fe42ded6325c9a509532e1a17c3dfbf628f62abf1"
+    },
+    {
+      "path": "src/kernel/types.ts",
+      "bytes": 5078,
+      "sha256": "da91d9d8ff292cc3beed03148cdc6f4eea21d169ba0b5c28b0f3c2641d374974"
+    },
+    {
+      "path": "tests/fixtures/standard-inputs.ts",
+      "bytes": 1735,
+      "sha256": "780cfea22958aac541b7f5c5a7bc5d14bdd5bc1e300de9e42807413573870378"
+    },
+    {
+      "path": "tests/unit/canonicalization.test.ts",
+      "bytes": 1450,
+      "sha256": "4de280a737993d7d93f095804593cf7a13895ff3aa332da2af11f87b8301eeb9"
+    },
+    {
+      "path": "tests/unit/determinism.test.ts",
+      "bytes": 2906,
+      "sha256": "840acb803fb134be0edf915c05b63ea9f7009a1baad1c9921dbcce6bfb4a7464"
+    },
+    {
+      "path": "tests/unit/freeze.test.ts",
+      "bytes": 994,
+      "sha256": "2cfe78e5ce5ef75a0e6924bf565b2fa9af58aa1d273aef02a628666818e72655"
+    },
+    {
+      "path": "tests/unit/raw-vs-normalized.test.ts",
+      "bytes": 1673,
+      "sha256": "d36766cb3e9d4c713f834faba580d5e36c37d3956b10138a90564cfe26446130"
+    },
+    {
+      "path": "tsconfig.json",
+      "bytes": 615,
+      "sha256": "d7c88c2f20797df0cea4b82261b1862195f5e879dc3ff7acfb77515a638d96da"
+    }
+  ]
+}
