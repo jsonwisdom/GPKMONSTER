@@ -144,3 +144,7 @@ AUTHORITY_CREATED=false
 ```
 
 Canon Carrie, Lore Larry, and Press Patty act only after Box D readback PASS. A PASS is scoped to the evaluated artifact and creates no external authority.
+
+## Garbage Press end-to-end X edition
+
+For a request that says `run it through the Garbage Press`, follow `references/seymour-garbage-press-e2e-v2.md` as the proposed production/delivery contract. Apply this skill's D1-D7 preflight/readback unchanged, and add the exact-file Gate E plus Seymour reverse replay. The X widescreen edition is 16:9, **not** a mutation of frozen 3:4 TriggerDeck canon. An image render, a local file, a downloadable file, customer receipt, approval and publication are distinct auditable states. Never mark success on a broken link or a mere promise of rendering. Human authority remains with Jason.
